@@ -1,0 +1,212 @@
+V 14
+2
+LANG:10001 0 
+LANG:10010 0 
+PANEL,-1 -1 1080 62 N "_3DFace" 0
+E E E E E 1 -1 -1 0  0 0
+""0  1
+E E 4
+"CBRef" "1"
+"EClose" E
+"dpi" "96"
+"pdpi" "92.6073"
+0 0 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+2
+LANG:10001 0 
+LANG:10010 0 
+6 1
+"RECTANGLE1"
+""
+1 0 0 E E E 1 E 1 E N {0,0,0} E N "LIB_IRC_AZUL_01" E E
+ E E
+0 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E 0 1 3 2 1 E 1.317073170731707 0 0.6 0 0 1 E 0 0 820 100
+22 2
+"COMBO_BOX1"
+""
+1 97 20 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+1 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+1
+"layoutAlignment" "AlignNone"
+2
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  95 18 339 42
+4
+2
+LANG:10001 1 -
+LANG:10010 3 ???
+
+0
+2
+LANG:10001 10 Zona Frios
+LANG:10010 3 ???
+
+0
+2
+LANG:10001 10 Zona Secos
+LANG:10010 3 ???
+
+0
+2
+LANG:10001 7 Envases
+LANG:10010 3 ???
+
+0
+
+E
+E
+E
+ 1 0
+22 3
+"COMBO_BOX2"
+""
+1 591.2499999999998 20 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+2 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+1
+"layoutAlignment" "AlignNone"
+2
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  589.2499999999998 18 833.2499999999998 42
+1
+2
+LANG:10001 1 -
+LANG:10010 3 ???
+
+0
+
+E
+E
+E
+ 1 0
+2 5
+"txf_pantalla_actual"
+""
+1 178 46 E E E 1 E 1 E N "White" E N "White" E E
+ E E
+4 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 15 Pantalla Actual
+
+4
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+"transformable" "0"
+"main()
+{
+  int n_ui = myUiNumber();
+  dpConnect(\"pantalla_actual\",\"ui_\" + n_ui + \"_pantalla_1.pantalla_actual\");
+}
+void pantalla_actual(string dp, string pantalla){
+  this.text(pantalla);
+}" 0
+ E 0 1 3 2 1 E 0.2902675781249997 0 0.606060606060606 -2.667628906249952 -7.878787878787872 0 E 178 46 338 79
+0 2 2 "0s" 0 0 0 73 0 0  178 46 1
+2
+LANG:10001 34 Tahoma,-1,15,5,50,0,0,0,0,0,Normal
+LANG:10010 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+0 2
+LANG:10001 5 Zona:
+LANG:10010 3 ---
+2 6
+"PRIMITIVE_TEXT2"
+""
+1 178 46 E E E 1 E 1 E N "White" E N "White" E E
+ E E
+5 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 15 Pantalla Actual
+
+4
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+"transformable" "0"
+"main()
+{
+  int n_ui = myUiNumber();
+  dpConnect(\"pantalla_actual\",\"ui_\" + n_ui + \"_pantalla_1.pantalla_actual\");
+}
+void pantalla_actual(string dp, string pantalla){
+  this.text(pantalla);
+}" 0
+ E 0 1 3 2 1 E 0.6249999999999994 0 0.606060606060606 378.75 -7.878787878787872 0 E 178 46 338 79
+0 2 2 "0s" 0 0 0 73 0 0  178 46 1
+2
+LANG:10001 34 Tahoma,-1,15,5,50,0,0,0,0,0,Normal
+LANG:10010 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+0 2
+LANG:10001 14 Accionamiento:
+LANG:10010 3 ---
+0
+LAYER, 1 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 2 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 3 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 4 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 5 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 6 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 7 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+0

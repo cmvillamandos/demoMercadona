@@ -1,0 +1,125 @@
+<!doctype html>
+<head>
+<title>Code view</title>
+<meta charset="utf-8"/>
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/doc/docs.css">
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/codemirror.css">
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/xq-dark.css">
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/codemirror.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/clike/clike.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/javascript/javascript.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/css/css.js"></script>
+<style>
+	body
+	{
+	background: #1C1C1C;
+	font-size:16px;
+	}
+	
+    .CodeMirror { line-height: 1.2; }
+    @media screen and (min-width: 1300px) {
+      article { max-width: 1000px; }
+      #nav { border-right: 499px solid transparent; }
+    }
+    span.clicky {
+      cursor: pointer;
+      background: #d70;
+      color: white;
+      padding: 0 3px;
+      border-radius: 4px;
+    }
+	::-webkit-scrollbar {
+		width: 12px;  /* for vertical scrollbars */
+		height: 12px; /* for horizontal scrollbars */
+	}
+
+	::-webkit-scrollbar-track {
+		background-color: #646464; /* dark grey track */
+		border-radius: 4px;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: #020202; /* darker grey handle */
+		border-radius: 4px;
+	}
+
+  </style>
+</head>
+<body>
+<article>
+
+
+<div id=view></div>
+
+<div class="border">
+    <textarea id="textareacode" readonly>#uses "classes/SmartNodes/accionamiento"
+
+class valvula : accionamiento
+{
+
+  //[SnDpeGroup=DATOS_ALARMA]
+  float Xt_TiempoVigilancia_POS;
+  //[SnDpeGroup=DATOS_ALARMA]
+  float STr_Diferencial_POS;
+
+  public valvula()
+  {
+  }
+
+  public float getXt_TiempoVigilancia_POS()
+  {
+    return get("Xt_TiempoVigilancia_POS", this.Xt_TiempoVigilancia_POS);
+  }
+
+  public void setXt_TiempoVigilancia_POS(float Xt_TiempoVigilancia_POS)
+  {
+    set("Xt_TiempoVigilancia_POS", Xt_TiempoVigilancia_POS);
+  }
+
+  public float getSTr_Diferencial_POS()
+  {
+    return get("STr_Diferencial_POS", this.STr_Diferencial_POS);
+  }
+
+  public void setSTr_Diferencial_POS(float STr_Diferencial_POS)
+  {
+    set("STr_Diferencial_POS", STr_Diferencial_POS);
+  }
+
+  public void cambioTiempoApertura(float tiempo){
+    setXt_TiempVigilancia_CM_F1(tiempo);
+  }
+
+  public void cambioTiempoCerrado(float tiempo){
+    setXt_TiempoVigilancia_CP_F1(tiempo);
+  }
+
+  public void aperturaManual(){
+    setXYd_M_OM_F1(1);
+  }
+
+  public void cierreManual(){
+    setXYd_M_OM_F1(0);
+  }
+};</textarea>
+</div>
+
+
+<script>
+function initUI() {
+   var editor = CodeMirror.fromTextArea(document.getElementById("textareacode"), {
+        mode: "text/x-ctrl",
+        lineWrapping: true,
+		lineNumbers: true,
+    	theme: "xq-dark",
+		readOnly: true
+      });	
+}
+
+
+window.onload = function() {
+  initUI();
+};
+
+</script>
+</article>

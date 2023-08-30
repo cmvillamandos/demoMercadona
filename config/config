@@ -1,0 +1,12 @@
+[general]
+pvss_path = "C:/Siemens/Automation/WinCC_OA/3.19"
+proj_path = "C:/WinCC_OA_Proj_3_19/subproyectos/Libreria_WinccOA_3_19_V1"
+proj_path = "C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide"
+proj_path = "C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_runtime"
+proj_path = "C:/WinCC_OA_Proj_3_19/demoMercadona"
+proj_version = "3.19"
+langs = "en_US.utf8"
+langs = "es_ES.utf8"
+
+[ui]
+versionControl = "git"

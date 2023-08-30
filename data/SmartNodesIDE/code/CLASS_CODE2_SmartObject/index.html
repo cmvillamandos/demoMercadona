@@ -1,0 +1,103 @@
+<!doctype html>
+<head>
+<title>Code view</title>
+<meta charset="utf-8"/>
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/doc/docs.css">
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/codemirror.css">
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/xq-dark.css">
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/codemirror.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/clike/clike.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/javascript/javascript.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/css/css.js"></script>
+<style>
+	body
+	{
+	background: #1C1C1C;
+	font-size:16px;
+	}
+	
+    .CodeMirror { line-height: 1.2; }
+    @media screen and (min-width: 1300px) {
+      article { max-width: 1000px; }
+      #nav { border-right: 499px solid transparent; }
+    }
+    span.clicky {
+      cursor: pointer;
+      background: #d70;
+      color: white;
+      padding: 0 3px;
+      border-radius: 4px;
+    }
+	::-webkit-scrollbar {
+		width: 12px;  /* for vertical scrollbars */
+		height: 12px; /* for horizontal scrollbars */
+	}
+
+	::-webkit-scrollbar-track {
+		background-color: #646464; /* dark grey track */
+		border-radius: 4px;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: #020202; /* darker grey handle */
+		border-radius: 4px;
+	}
+
+  </style>
+</head>
+<body>
+<article>
+
+
+<div id=view></div>
+
+<div class="border">
+    <textarea id="textareacode" readonly>/**
+ *
+ * This is encrypted file and cannot be modified
+ */
+
+class SmartObject
+{
+  SmartObject SmartObject();
+  bool persist();
+  void connectToDp(const string dpName, const bool cachedObject);
+  void initialize();
+  void release();
+  string getUuid();
+  string getDpName();
+  string getObjectClass();
+  bool equals(shared_ptr<SmartObject> otherObject);
+  string getDpeForAttribute(const string attribute);
+  string getAttributeForDPE(const string dpe);
+  string getPanel(string mode);
+  void run();
+  void destroyAllContainedObjects();
+  int getSmartObjectIndex(dyn_anytype dynSmartObjects);
+  void createContainedObject(const string attributeName, const string requestedClassName, ... );
+  void setExtendedConfigurations(dyn_anytype extendedConfigurations);
+  dyn_anytype getExtendedConfigurations();
+  void addExtendedConfiguration(shared_ptr<SmartObject> extendedConfiguration);
+  void removeExtendedConfiguration(shared_ptr<SmartObject> extendedConfiguration);
+}</textarea>
+</div>
+
+
+<script>
+function initUI() {
+   var editor = CodeMirror.fromTextArea(document.getElementById("textareacode"), {
+        mode: "text/x-ctrl",
+        lineWrapping: true,
+		lineNumbers: true,
+    	theme: "xq-dark",
+		readOnly: true
+      });	
+}
+
+
+window.onload = function() {
+  initUI();
+};
+
+</script>
+</article>

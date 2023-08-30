@@ -1,0 +1,422 @@
+<!doctype html>
+<head>
+<title>Code view</title>
+<meta charset="utf-8"/>
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/doc/docs.css">
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/codemirror.css">
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/xq-dark.css">
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/codemirror.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/clike/clike.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/javascript/javascript.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/css/css.js"></script>
+<style>
+	body
+	{
+	background: #1C1C1C;
+	font-size:16px;
+	}
+	
+    .CodeMirror { line-height: 1.2; }
+    @media screen and (min-width: 1300px) {
+      article { max-width: 1000px; }
+      #nav { border-right: 499px solid transparent; }
+    }
+    span.clicky {
+      cursor: pointer;
+      background: #d70;
+      color: white;
+      padding: 0 3px;
+      border-radius: 4px;
+    }
+	::-webkit-scrollbar {
+		width: 12px;  /* for vertical scrollbars */
+		height: 12px; /* for horizontal scrollbars */
+	}
+
+	::-webkit-scrollbar-track {
+		background-color: #646464; /* dark grey track */
+		border-radius: 4px;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: #020202; /* darker grey handle */
+		border-radius: 4px;
+	}
+
+  </style>
+</head>
+<body>
+<article>
+
+
+<div id=view></div>
+
+<div class="border">
+    <textarea id="textareacode" readonly>#uses "classes/SmartNodes/SmartObject"
+
+class accionamiento : SmartObject
+{
+
+  bool Xd_INHA;
+  bool Xd_Local_MAN;
+  bool Xd_Local_AUTO;
+  int Xi_MODO;
+  bool Xd_EP;
+  bool Xd_EXT;
+  bool Xd_RESET;
+  bool Xd_PE;
+  bool Xd_ALM_1;
+  bool Xd_ALM_2;
+  bool Xd_A_OM_F1;
+  bool Xd_L_OM_F1;
+  bool Yd_OM_F1;
+  bool Yd_ALM;
+  int Yb_EST;
+  bool XYd_M_OM_F1;
+  //[SnDpeGroup=DATOS_ALARMA]
+  bool Yd_Alarma_EP;
+  //[SnDpeGroup=DATOS_ALARMA]
+  bool Yd_Alarma_CM_F1;
+  //[SnDpeGroup=DATOS_ALARMA]
+  bool Yd_Alarma_CP_F1;
+  //[SnDpeGroup=DATOS_ALARMA]
+  bool Yd_Alarma_EXT;
+  //[SnDpeGroup=DATOS_ALARMA]
+  bool Yd_Aviso_TEST;
+  //[SnDpeGroup=DATOS_ALARMA]
+  bool Yd_Alarma_1;
+  //[SnDpeGroup=DATOS_ALARMA]
+  bool Yd_Alarma_2;
+  //[SnDpeGroup=DATOS_ALARMA]
+  float Xt_TiempoVigilancia_CM_F1;
+  //[SnDpeGroup=DATOS_ALARMA]
+  float Xt_TiempoVigilancia_CP_F1;
+  bool archivado_bbdd;
+
+  public bool isXd_INHA()
+  {
+    return get("Xd_INHA", this.Xd_INHA);
+  }
+
+  public void setXd_INHA(bool Xd_INHA)
+  {
+    set("Xd_INHA", Xd_INHA);
+  }
+
+  public bool isXd_Local_MAN()
+  {
+    return get("Xd_Local_MAN", this.Xd_Local_MAN);
+  }
+
+  public void setXd_Local_MAN(bool Xd_Local_MAN)
+  {
+    set("Xd_Local_MAN", Xd_Local_MAN);
+  }
+
+  public bool isXd_Local_AUTO()
+  {
+    return get("Xd_Local_AUTO", this.Xd_Local_AUTO);
+  }
+
+  public void setXd_Local_AUTO(bool Xd_Local_AUTO)
+  {
+    set("Xd_Local_AUTO", Xd_Local_AUTO);
+  }
+
+  public int getXi_MODO()
+  {
+    return get("Xi_MODO", this.Xi_MODO);
+  }
+
+  public void setXi_MODO(int Xi_MODO)
+  {
+    set("Xi_MODO", Xi_MODO);
+  }
+
+  public bool isXd_EP()
+  {
+    return get("Xd_EP", this.Xd_EP);
+  }
+
+  public void setXd_EP(bool Xd_EP)
+  {
+    set("Xd_EP", Xd_EP);
+  }
+
+  public bool isXd_EXT()
+  {
+    return get("Xd_EXT", this.Xd_EXT);
+  }
+
+  public void setXd_EXT(bool Xd_EXT)
+  {
+    set("Xd_EXT", Xd_EXT);
+  }
+
+  public bool isXd_RESET()
+  {
+    return get("Xd_RESET", this.Xd_RESET);
+  }
+
+  public void setXd_RESET(bool Xd_RESET)
+  {
+    set("Xd_RESET", Xd_RESET);
+  }
+
+  public bool isXd_PE()
+  {
+    return get("Xd_PE", this.Xd_PE);
+  }
+
+  public void setXd_PE(bool Xd_PE)
+  {
+    set("Xd_PE", Xd_PE);
+  }
+
+  public bool isXd_ALM_1()
+  {
+    return get("Xd_ALM_1", this.Xd_ALM_1);
+  }
+
+  public void setXd_ALM_1(bool Xd_ALM_1)
+  {
+    set("Xd_ALM_1", Xd_ALM_1);
+  }
+
+  public bool isXd_ALM_2()
+  {
+    return get("Xd_ALM_2", this.Xd_ALM_2);
+  }
+
+  public void setXd_ALM_2(bool Xd_ALM_2)
+  {
+    set("Xd_ALM_2", Xd_ALM_2);
+  }
+
+  public bool isXd_A_OM_F1()
+  {
+    return get("Xd_A_OM_F1", this.Xd_A_OM_F1);
+  }
+
+  public void setXd_A_OM_F1(bool Xd_A_OM_F1)
+  {
+    set("Xd_A_OM_F1", Xd_A_OM_F1);
+  }
+
+  public bool isXd_L_OM_F1()
+  {
+    return get("Xd_L_OM_F1", this.Xd_L_OM_F1);
+  }
+
+  public void setXd_L_OM_F1(bool Xd_L_OM_F1)
+  {
+    set("Xd_L_OM_F1", Xd_L_OM_F1);
+  }
+
+  public bool isYd_OM_F1()
+  {
+    return get("Yd_OM_F1", this.Yd_OM_F1);
+  }
+
+  public void setYd_OM_F1(bool Yd_OM_F1)
+  {
+    set("Yd_OM_F1", Yd_OM_F1);
+  }
+
+  public bool isYd_ALM()
+  {
+    return get("Yd_ALM", this.Yd_ALM);
+  }
+
+  public void setYd_ALM(bool Yd_ALM)
+  {
+    set("Yd_ALM", Yd_ALM);
+  }
+
+  public int getYb_EST()
+  {
+    return get("Yb_EST", this.Yb_EST);
+  }
+
+  public void setYb_EST(int Yb_EST)
+  {
+    set("Yb_EST", Yb_EST);
+  }
+
+  public bool isXYd_M_OM_F1()
+  {
+    return get("XYd_M_OM_F1", this.XYd_M_OM_F1);
+  }
+
+  public void setXYd_M_OM_F1(bool XYd_M_OM_F1)
+  {
+    set("XYd_M_OM_F1", XYd_M_OM_F1);
+  }
+
+  public bool isYd_Alarma_EP()
+  {
+    return get("Yd_Alarma_EP", this.Yd_Alarma_EP);
+  }
+
+  public void setYd_Alarma_EP(bool Yd_Alarma_EP)
+  {
+    set("Yd_Alarma_EP", Yd_Alarma_EP);
+  }
+
+  public bool isYd_Alarma_CM_F1()
+  {
+    return get("Yd_Alarma_CM_F1", this.Yd_Alarma_CM_F1);
+  }
+
+  public void setYd_Alarma_CM_F1(bool Yd_Alarma_CM_F1)
+  {
+    set("Yd_Alarma_CM_F1", Yd_Alarma_CM_F1);
+  }
+
+  public bool isYd_Alarma_CP_F1()
+  {
+    return get("Yd_Alarma_CP_F1", this.Yd_Alarma_CP_F1);
+  }
+
+  public void setYd_Alarma_CP_F1(bool Yd_Alarma_CP_F1)
+  {
+    set("Yd_Alarma_CP_F1", Yd_Alarma_CP_F1);
+  }
+
+  public bool isYd_Alarma_EXT()
+  {
+    return get("Yd_Alarma_EXT", this.Yd_Alarma_EXT);
+  }
+
+  public void setYd_Alarma_EXT(bool Yd_Alarma_EXT)
+  {
+    set("Yd_Alarma_EXT", Yd_Alarma_EXT);
+  }
+
+  public bool isYd_Aviso_TEST()
+  {
+    return get("Yd_Aviso_TEST", this.Yd_Aviso_TEST);
+  }
+
+  public void setYd_Aviso_TEST(bool Yd_Aviso_TEST)
+  {
+    set("Yd_Aviso_TEST", Yd_Aviso_TEST);
+  }
+
+  public bool isYd_Alarma_1()
+  {
+    return get("Yd_Alarma_1", this.Yd_Alarma_1);
+  }
+
+  public void setYd_Alarma_1(bool Yd_Alarma_1)
+  {
+    set("Yd_Alarma_1", Yd_Alarma_1);
+  }
+
+  public bool isYd_Alarma_2()
+  {
+    return get("Yd_Alarma_2", this.Yd_Alarma_2);
+  }
+
+  public void setYd_Alarma_2(bool Yd_Alarma_2)
+  {
+    set("Yd_Alarma_2", Yd_Alarma_2);
+  }
+
+  public float getXt_TiempVigilancia_CM_F1()
+  {
+    return get("Xt_TiempVigilancia_CM_F1", this.Xt_TiempVigilancia_CM_F1);
+  }
+
+  public void setXt_TiempoVigilancia_CM_F1(float Xt_TiempVigilancia_CM_F1)
+  {
+    set("Xt_TiempVigilancia_CM_F1", Xt_TiempVigilancia_CM_F1);
+  }
+
+  public float getXt_TiempoVigilancia_CP_F1()
+  {
+    return get("Xt_TiempoVigilancia_CP_F1", this.Xt_TiempoVigilancia_CP_F1);
+  }
+
+  public void setXt_TiempoVigilancia_CP_F1(float Xt_TiempoVigilancia_CP_F1)
+  {
+    set("Xt_TiempoVigilancia_CP_F1", Xt_TiempoVigilancia_CP_F1);
+  }
+
+  public bool isArchivado_bbdd()
+  {
+    return get("archivado_bbdd", this.archivado_bbdd);
+  }
+
+  public void setArchivado_bbdd(bool archivado_bbdd)
+  {
+    set("archivado_bbdd", archivado_bbdd);
+  }
+
+
+  public accionamiento()
+  {
+  }
+
+  public marchaManual(){
+    setXYd_M_OM_F1(1);
+  }
+
+  public paroManual(){
+    setXYd_M_OM_F1(0);
+  }
+
+  public modoAuto(){
+    setXi_MODO(0);
+  }
+
+  public modoManual(){
+    setXi_MODO(10);
+  }
+
+  public modoManualLocal(){
+    setXi_MODO(11);
+  }
+
+  public modoManualMantenimiento(){
+    setXi_MODO(12);
+  }
+
+  public modoInhabilitado(){
+    setXi_MODO(255);
+  }
+
+  public cambioTiempoVigilanciaMarcha(float tiempo){
+    setXt_TiempoVigilancia_CM_F1(tiempo );
+  }
+
+  public cambioTiempoVigilanciaParo(float tiempo){
+    setXt_TiempoVigilancia_CP_F1(tiempo);
+  }
+
+  public cambioAlmacenado(bool guardar){
+    setArchivado_bbdd(guardar);
+  }
+};
+</textarea>
+</div>
+
+
+<script>
+function initUI() {
+   var editor = CodeMirror.fromTextArea(document.getElementById("textareacode"), {
+        mode: "text/x-ctrl",
+        lineWrapping: true,
+		lineNumbers: true,
+    	theme: "xq-dark",
+		readOnly: true
+      });	
+}
+
+
+window.onload = function() {
+  initUI();
+};
+
+</script>
+</article>

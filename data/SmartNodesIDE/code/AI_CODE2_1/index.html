@@ -1,0 +1,423 @@
+<!doctype html>
+<head>
+<title>Code view</title>
+<meta charset="utf-8"/>
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/doc/docs.css">
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/codemirror.css">
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/xq-dark.css">
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/codemirror.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/clike/clike.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/javascript/javascript.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/css/css.js"></script>
+<style>
+	body
+	{
+	background: #1C1C1C;
+	font-size:16px;
+	}
+	
+    .CodeMirror { line-height: 1.2; }
+    @media screen and (min-width: 1300px) {
+      article { max-width: 1000px; }
+      #nav { border-right: 499px solid transparent; }
+    }
+    span.clicky {
+      cursor: pointer;
+      background: #d70;
+      color: white;
+      padding: 0 3px;
+      border-radius: 4px;
+    }
+	::-webkit-scrollbar {
+		width: 12px;  /* for vertical scrollbars */
+		height: 12px; /* for horizontal scrollbars */
+	}
+
+	::-webkit-scrollbar-track {
+		background-color: #646464; /* dark grey track */
+		border-radius: 4px;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: #020202; /* darker grey handle */
+		border-radius: 4px;
+	}
+
+  </style>
+</head>
+<body>
+<article>
+
+
+<div id=view></div>
+
+<div class="border">
+    <textarea id="textareacode" readonly>{
+    "SnSplice": [{
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Xd_INHA~AddressS7~accionamientos",
+            "elementName": "Xd_INHA",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Xd_INHA/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Xd_Local_MAN~AddressS7~accionamientos",
+            "elementName": "Xd_Local_MAN",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Xd_Local_MAN/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Xd_Local_AUTO~AddressS7~accionamientos",
+            "elementName": "Xd_Local_AUTO",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Xd_Local_AUTO/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Xi_MODO~AddressS7~accionamientos",
+            "elementName": "Xi_MODO",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "int",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Xi_MODO/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Xd_EP~AddressS7~accionamientos",
+            "elementName": "Xd_EP",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Xd_EP/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Xd_EXT~AddressS7~accionamientos",
+            "elementName": "Xd_EXT",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Xd_EXT/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Xd_RESET~AddressS7~accionamientos",
+            "elementName": "Xd_RESET",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Xd_RESET/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Xd_PE~AddressS7~accionamientos",
+            "elementName": "Xd_PE",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Xd_PE/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Xd_ALM_1~AddressS7~accionamientos",
+            "elementName": "Xd_ALM_1",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Xd_ALM_1/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Xd_ALM_2~AddressS7~accionamientos",
+            "elementName": "Xd_ALM_2",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Xd_ALM_2/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Xd_A_OM_F1~AddressS7~accionamientos",
+            "elementName": "Xd_A_OM_F1",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Xd_A_OM_F1/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Xd_L_OM_F1~AddressS7~accionamientos",
+            "elementName": "Xd_L_OM_F1",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Xd_L_OM_F1/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Yd_OM_F1~AddressS7~accionamientos",
+            "elementName": "Yd_OM_F1",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Yd_OM_F1/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Yd_ALM~AddressS7~accionamientos",
+            "elementName": "Yd_ALM",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Yd_ALM/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~Yb_EST~AddressS7~accionamientos",
+            "elementName": "Yb_EST",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "int",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/Yb_EST/accionamientos"
+        }, {
+            "parameters": ["string accionamiento"],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAddressS7",
+            "spliceTemplate": "",
+            "elementType": "AddressS7",
+            "customPrefix": "s7",
+            "dpName": "SnSplice~accionamiento~XYd_M_OM_F1~AddressS7~accionamientos",
+            "elementName": "XYd_M_OM_F1",
+            "properties": {
+                "connectionName": "conexionS7plus",
+                "direction": "{{accionamiento}}",
+                "lowLevel": "TRUE",
+                "dataType": "bool",
+                "length": "0",
+                "pollGroup": "pollGroup1",
+                "active": "TRUE",
+                "subIndex": "0",
+                "driverNumber": "1"
+            },
+            "spliceName": "accionamiento/AddressS7/XYd_M_OM_F1/accionamientos"
+        }],
+    "SnMold": [{
+            "moldName": "moldeAccionamientoS7plus",
+            "elementRestricted": false,
+            "dpName": "SnMold~accionamiento~moldeAccionamientoS7plus",
+            "molds": [],
+            "className": "accionamiento",
+            "classNameIncluded": false,
+            "splices": ["SnSplice~accionamiento~Xd_INHA~AddressS7~accionamientos", "SnSplice~accionamiento~Xd_Local_MAN~AddressS7~accionamientos", "SnSplice~accionamiento~Xd_Local_AUTO~AddressS7~accionamientos", "SnSplice~accionamiento~Xi_MODO~AddressS7~accionamientos", "SnSplice~accionamiento~Xd_EP~AddressS7~accionamientos", "SnSplice~accionamiento~Xd_EXT~AddressS7~accionamientos", "SnSplice~accionamiento~Xd_RESET~AddressS7~accionamientos", "SnSplice~accionamiento~Xd_PE~AddressS7~accionamientos", "SnSplice~accionamiento~Xd_ALM_1~AddressS7~accionamientos", "SnSplice~accionamiento~Xd_ALM_2~AddressS7~accionamientos", "SnSplice~accionamiento~Xd_A_OM_F1~AddressS7~accionamientos", "SnSplice~accionamiento~Xd_L_OM_F1~AddressS7~accionamientos", "SnSplice~accionamiento~Yd_OM_F1~AddressS7~accionamientos", "SnSplice~accionamiento~Yd_ALM~AddressS7~accionamientos", "SnSplice~accionamiento~Yb_EST~AddressS7~accionamientos", "SnSplice~accionamiento~XYd_M_OM_F1~AddressS7~accionamientos"]
+        }]
+}</textarea>
+</div>
+
+
+<script>
+function initUI() {
+   var editor = CodeMirror.fromTextArea(document.getElementById("textareacode"), {
+        mode: "application/json",
+        lineWrapping: true,
+		lineNumbers: true,
+    	theme: "xq-dark",
+		readOnly: true
+      });	
+}
+
+
+window.onload = function() {
+  initUI();
+};
+
+</script>
+</article>

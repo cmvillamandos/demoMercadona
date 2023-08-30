@@ -1,0 +1,5 @@
+node,displayName/en_US.utf8,displayName/es_ES.utf8,target,targetAlarmId,parent
+node1,Motor1,Motor1,Frigorifico_1,,
+node2,Motor2,Motor2,Frigorifico_2,,
+node3,Valvula1,Valvula1,ValvulaFrio1,,
+node4,Valvula2,Valvula2,ValvulaFrio2,,

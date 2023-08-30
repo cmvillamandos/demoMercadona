@@ -1,0 +1,318 @@
+<!doctype html>
+<head>
+<title>Merge view</title>
+<meta charset="utf-8"/>
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/doc/docs.css">
+
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/codemirror.css">
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/xq-dark.css">
+<link rel=stylesheet href="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/addon/merge/merge.css">
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/lib/codemirror.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/clike/clike.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/mode/css/css.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/addon/diff/diff_match_patch.js"></script>
+<script src="file://C:/WinCC_OA_Proj_3_19/subproyectos/SNpp_ide/data/SmartNodesIDE/MergeTool/addon/merge/merge.js"></script>
+<style>
+	body
+	{
+	background: #000000;
+	font-size:16px;
+	}
+    .CodeMirror { line-height: 1.2; }
+    @media screen and (min-width: 1300px) {
+      article { max-width: 1000px; }
+      #nav { border-right: 499px solid transparent; }
+    }
+    span.clicky {
+      cursor: pointer;
+      background: #d70;
+      color: white;
+      padding: 0 3px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+<article>
+
+
+<div id=view></div>
+
+<div style="display:none">
+<div id="valueleft">{
+    "SnSplice": [{
+            "customPrefix": "",
+            "dpName": "SnSplice~accionamiento~Xd_INHA~AlertDigital",
+            "deviceClass": "accionamiento",
+            "parameters": [],
+            "elementConfiguratorClass": "EngElementConfiguratorAlertDigital",
+            "elementName": "Xd_INHA",
+            "elementType": "AlertDigital",
+            "properties": {
+                "alertClass": "",
+                "normalValue": false,
+                "badText": {
+                    "en_US.utf8": "",
+                    "es_ES.utf8": ""
+                },
+                "active": false,
+                "okText": {
+                    "en_US.utf8": "",
+                    "es_ES.utf8": ""
+                }
+            },
+            "spliceName": "accionamiento/AlertDigital/Xd_INHA",
+            "spliceTemplate": ""
+        }]
+}</div>
+<div id="valueright">{
+    "SnSplice": [{
+            "parameters": [],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAlertDigital",
+            "spliceTemplate": "",
+            "elementType": "AlertDigital",
+            "customPrefix": "alert",
+            "dpName": "SnSplice~accionamiento~Xd_INHA~AlertDigital",
+            "elementName": "Xd_INHA",
+            "properties": {
+                "alertClass": "warning",
+                "active": "TRUE",
+                "badText": "Alarma",
+                "normalValue": "FALSE"
+            },
+            "spliceName": "accionamiento/AlertDigital/Xd_INHA"
+        }, {
+            "parameters": [],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAlertDigital",
+            "spliceTemplate": "",
+            "elementType": "AlertDigital",
+            "customPrefix": "alert",
+            "dpName": "SnSplice~accionamiento~Xd_Local_MAN~AlertDigital",
+            "elementName": "Xd_Local_MAN",
+            "properties": {
+                "alertClass": "warning",
+                "active": "TRUE",
+                "badText": "Alarma",
+                "normalValue": "FALSE"
+            },
+            "spliceName": "accionamiento/AlertDigital/Xd_Local_MAN"
+        }, {
+            "parameters": [],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAlertDigital",
+            "spliceTemplate": "",
+            "elementType": "AlertDigital",
+            "customPrefix": "alert",
+            "dpName": "SnSplice~accionamiento~Xd_Local_AUTO~AlertDigital",
+            "elementName": "Xd_Local_AUTO",
+            "properties": {
+                "alertClass": "warning",
+                "active": "TRUE",
+                "badText": "Alarma",
+                "normalValue": "FALSE"
+            },
+            "spliceName": "accionamiento/AlertDigital/Xd_Local_AUTO"
+        }, {
+            "parameters": [],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAlertDigital",
+            "spliceTemplate": "",
+            "elementType": "AlertDigital",
+            "customPrefix": "alert",
+            "dpName": "SnSplice~accionamiento~Xd_EP~AlertDigital",
+            "elementName": "Xd_EP",
+            "properties": {
+                "alertClass": "warning",
+                "active": "TRUE",
+                "badText": "Alarma",
+                "normalValue": "FALSE"
+            },
+            "spliceName": "accionamiento/AlertDigital/Xd_EP"
+        }, {
+            "parameters": [],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAlertDigital",
+            "spliceTemplate": "",
+            "elementType": "AlertDigital",
+            "customPrefix": "alert",
+            "dpName": "SnSplice~accionamiento~Xd_EXT~AlertDigital",
+            "elementName": "Xd_EXT",
+            "properties": {
+                "alertClass": "warning",
+                "active": "TRUE",
+                "badText": "Alarma",
+                "normalValue": "FALSE"
+            },
+            "spliceName": "accionamiento/AlertDigital/Xd_EXT"
+        }, {
+            "parameters": [],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAlertDigital",
+            "spliceTemplate": "",
+            "elementType": "AlertDigital",
+            "customPrefix": "alert",
+            "dpName": "SnSplice~accionamiento~Xd_RESET~AlertDigital",
+            "elementName": "Xd_RESET",
+            "properties": {
+                "alertClass": "warning",
+                "active": "TRUE",
+                "badText": "Alarma",
+                "normalValue": "FALSE"
+            },
+            "spliceName": "accionamiento/AlertDigital/Xd_RESET"
+        }, {
+            "parameters": [],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAlertDigital",
+            "spliceTemplate": "",
+            "elementType": "AlertDigital",
+            "customPrefix": "alert",
+            "dpName": "SnSplice~accionamiento~Xd_PE~AlertDigital",
+            "elementName": "Xd_PE",
+            "properties": {
+                "alertClass": "warning",
+                "active": "TRUE",
+                "badText": "Alarma",
+                "normalValue": "FALSE"
+            },
+            "spliceName": "accionamiento/AlertDigital/Xd_PE"
+        }, {
+            "parameters": [],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAlertDigital",
+            "spliceTemplate": "",
+            "elementType": "AlertDigital",
+            "customPrefix": "alert",
+            "dpName": "SnSplice~accionamiento~Xd_ALM_1~AlertDigital",
+            "elementName": "Xd_ALM_1",
+            "properties": {
+                "alertClass": "warning",
+                "active": "TRUE",
+                "badText": "Alarma",
+                "normalValue": "FALSE"
+            },
+            "spliceName": "accionamiento/AlertDigital/Xd_ALM_1"
+        }, {
+            "parameters": [],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAlertDigital",
+            "spliceTemplate": "",
+            "elementType": "AlertDigital",
+            "customPrefix": "alert",
+            "dpName": "SnSplice~accionamiento~Xd_ALM_2~AlertDigital",
+            "elementName": "Xd_ALM_2",
+            "properties": {
+                "alertClass": "warning",
+                "active": "TRUE",
+                "badText": "Alarma",
+                "normalValue": "FALSE"
+            },
+            "spliceName": "accionamiento/AlertDigital/Xd_ALM_2"
+        }, {
+            "parameters": [],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAlertDigital",
+            "spliceTemplate": "",
+            "elementType": "AlertDigital",
+            "customPrefix": "alert",
+            "dpName": "SnSplice~accionamiento~Xd_A_OM_F1~AlertDigital",
+            "elementName": "Xd_A_OM_F1",
+            "properties": {
+                "alertClass": "warning",
+                "active": "TRUE",
+                "badText": "Alarma",
+                "normalValue": "FALSE"
+            },
+            "spliceName": "accionamiento/AlertDigital/Xd_A_OM_F1"
+        }, {
+            "parameters": [],
+            "deviceClass": "accionamiento",
+            "elementConfiguratorClass": "EngElementConfiguratorAlertDigital",
+            "spliceTemplate": "",
+            "elementType": "AlertDigital",
+            "customPrefix": "alert",
+            "dpName": "SnSplice~accionamiento~Xd_L_OM_F1~AlertDigital",
+            "elementName": "Xd_L_OM_F1",
+            "properties": {
+                "alertClass": "warning",
+                "active": "TRUE",
+                "badText": "Alarma",
+                "normalValue": "FALSE"
+            },
+            "spliceName": "accionamiento/AlertDigital/Xd_L_OM_F1"
+        }],
+    "SnMold": [{
+            "moldName": "accionamientoAlerts",
+            "elementRestricted": false,
+            "dpName": "SnMold~accionamiento~accionamientoAlerts",
+            "molds": [],
+            "className": "accionamiento",
+            "classNameIncluded": false,
+            "splices": ["SnSplice~accionamiento~Xd_INHA~AlertDigital", "SnSplice~accionamiento~Xd_Local_MAN~AlertDigital", "SnSplice~accionamiento~Xd_Local_AUTO~AlertDigital", "SnSplice~accionamiento~Xd_EP~AlertDigital", "SnSplice~accionamiento~Xd_EXT~AlertDigital", "SnSplice~accionamiento~Xd_RESET~AlertDigital", "SnSplice~accionamiento~Xd_PE~AlertDigital", "SnSplice~accionamiento~Xd_ALM_1~AlertDigital", "SnSplice~accionamiento~Xd_ALM_2~AlertDigital", "SnSplice~accionamiento~Xd_A_OM_F1~AlertDigital", "SnSplice~accionamiento~Xd_L_OM_F1~AlertDigital"]
+        }]
+}</div>
+</div>
+
+<script>
+var value, orig1, orig2, dv, panes = 2, highlight = true, connect = "align", collapse = false;
+function initUI() {
+  if (value == null) return;
+  var target = document.getElementById("view");
+  target.innerHTML = "";
+  dv = CodeMirror.MergeView(target, {
+	orientation: "b-a",
+    value: value,
+    origLeft:  null,
+    orig: orig2,
+    lineNumbers: true,
+    mode: "application/json",
+	theme: "xq-dark",
+	readOnly: true,
+    highlightDifferences: highlight,
+    connect: connect,
+    collapseIdentical: collapse
+  });
+}
+
+function toggleDifferences() {
+  dv.setShowDifferences(highlight = !highlight);
+}
+
+window.onload = function() {
+  value = document.getElementById("valueleft").innerHTML;  
+  orig2 = document.getElementById("valueright").innerHTML;  ;
+    
+  initUI();
+//  let d = document.createElement("div"); d.style.cssText = "width: 50px; margin: 7px; height: 14px"; dv.editor().addLineWidget(57, d)
+};
+
+function mergeViewHeight(mergeView) {
+  function editorHeight(editor) {
+    if (!editor) return 0;
+    return editor.getScrollInfo().height;
+  }
+  return Math.max(editorHeight(mergeView.leftOriginal()),
+                  editorHeight(mergeView.editor()),
+                  editorHeight(mergeView.rightOriginal()));
+}
+
+function resize(mergeView) {
+  var height = mergeViewHeight(mergeView);
+  for(;;) {
+    if (mergeView.leftOriginal())
+      mergeView.leftOriginal().setSize(null, height);
+    mergeView.editor().setSize(null, height);
+    if (mergeView.rightOriginal())
+      mergeView.rightOriginal().setSize(null, height);
+
+    var newHeight = mergeViewHeight(mergeView);
+    if (newHeight >= height) break;
+    else height = newHeight;
+  }
+  mergeView.wrap.style.height = height + "px";
+}
+</script>
+</article>
+</body>
