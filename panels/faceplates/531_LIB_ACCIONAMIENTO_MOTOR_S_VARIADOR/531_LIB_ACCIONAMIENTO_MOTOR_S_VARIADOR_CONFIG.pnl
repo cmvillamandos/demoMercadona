@@ -1,0 +1,956 @@
+V 14
+7
+LANG:10001 0 
+LANG:10010 20 MOTOR_S_VF_AN_CONFIG
+LANG:10011 0 
+LANG:10009 17 MOTOR_S_VF_CONFIG
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+PANEL,-1 -1 520 500 N "LIB_IRC_BLANCO" 3
+"$ELEM"
+"$INST"
+"$TAG"
+E E E E E 1 -1 -1 0  0 0
+""0  1
+E "//--------------------------------------------------------------------------------
+//Clases importadas a utilizar por las funciones de la librería
+lib_accionamiento_motor_s_var accionamiento_motor_s_var = lib_accionamiento_motor_s_var($INST);
+lib_comunicacion_vf comunicacion_vf = lib_comunicacion_vf($INST + \"_VF\");
+
+//---------------Variables auxiliares---------------------
+//Seleccionado cuando el foco actual está en este campo
+bool cfm_marcha_seleccionado = FALSE;
+
+//Confirmado cuando se pulsa intro estando en este campo
+bool cfm_marcha_confirmado = FALSE;
+
+//Seleccionado cuando el foco actual está en este campo
+bool cfm_paro_seleccionado = FALSE;
+
+//Confirmado cuando se pulsa intro estando en este campo
+bool cfm_paro_confirmado = FALSE;
+
+//Seleccionado cuando el foco actual está en este campo
+bool ta_seleccionado = FALSE;
+
+//Confirmado cuando se pulsa intro estando en este campo
+bool ta_confirmado = FALSE;
+
+//Seleccionado cuando el foco actual está en este campo
+bool tp_seleccionado = FALSE;
+
+//Confirmado cuando se pulsa intro estando en este campo
+bool tp_confirmado = FALSE;
+
+string tipoInst = dpTypeName($INST);
+" 0
+ 5
+"CBRef" "1"
+"EClose" E
+"type" "BG_ACCIONAMIENTO_MOTOR_S_VAR"
+"dpi" "96"
+"pdpi" "96"
+0 0 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+2
+LANG:10001 0 
+LANG:10010 0 
+6 32
+"RECTANGLE129"
+""
+1 40 90 E E E 1 E 1 E N {0,0,0} E N {255,255,255} E E
+ E E
+31 0 0 0 0 0
+E E E
+0
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+7
+"shadowOffset" "[5,5]"
+"shadowColor" "{63,63,63,80}"
+"shadowRadius" "18"
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+"main()
+{
+  mapping estados_motor;
+
+  if($ELEM == \"cinta\")
+    setMultiValue(this,\"fill\",\"[pattern,[fit,any,iconos/faceplates/01_025_cinta_mediana/cinta_mediana_gris.svg]]\",
+                  this, \"shadowOffset\", 5, 5);
+  else if($ELEM == \"bomba\")
+    setMultiValue(this,\"fill\",\"[pattern,[fit,any,iconos/faceplates/01_006_bomba_derecha/bomba_derecha_gris.svg]]\",
+                  this, \"shadowOffset\", 5, 5);
+  else if($ELEM == \"sinfin\")
+    setMultiValue(this,\"fill\",\"[pattern,[fit,any,iconos/faceplates/01_033_sinfin/sinfin_gris.svg]]\",
+                  this, \"shadowOffset\", 5, 5);
+
+  estados_motor = cambiarEstadoClaseGif($INST);//Función para obtener el mapa con los estados de los motores
+
+  if(dpExists(estados_motor.value(tipoInst, \"\")))  dpConnectUserData(\"cambiarEstadoObjetoGif\", this.name(), estados_motor.value(tipoInst, \"\")); //Modifica el patternfill del motor según su estado(obtenido del mapa de estados) (faceplates con gif)
+  else colorSombraMaquinaError(); //Setea el color (Rojo) de la sombra del objeto (motor)
+}
+" 0
+ E -1 1 3 2 1 E 2.216666666666666 0 1.081818181818182 -81.31770858841496 -60.75868623331989 2  1 0  "pictures/iconos/faceplates/01_001_motor_derecha/motor_derecha_gris.svg" 4294967295 E 40 90 100 200
+14 43
+"txf_es_cf"
+"MEDIANO_AZUL"
+1 246.6140794104514 98.90846332588218 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+42 0 0 0 0 0
+E E E
+0
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+5
+"shadowOffset" "[5,5]"
+"shadowColor" "{63,63,63,70}"
+"shadowRadius" "18"
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+7
+LANG:10001 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10009 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10008 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10018 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  244 71 413 98
+3 "6s" 6 0 0 10 0 -1  "main(mapping event)
+{
+  float tiempo;
+  tiempo=tecladoFaceplates($INST,\"keypad\");
+  motor.cambioTiempoVigilanciaMarcha(tiempo); //setea en DATOS_ALARMA.Xt_TiempoVigilancia_CM_F1
+}
+" 0
+ "main()
+{
+   dpConnect(\"cambiar_cfm_marcha\", accionamiento_motor_s_var.get_tiempovigilancia_cm_f1()); //Devuelve \"Static.DATOS_ALARMA.Xt_TiempoVigilancia_CM_F1\"
+}
+
+//Comprueba si el foco está sobre el campo seleccionado y le setea el estado como valor
+void cambiar_cfm_marcha(string dp, int estado){
+  if(!cfm_marcha_seleccionado)  setValue(\"\", \"text\", estado);
+}
+" 0
+ E
+14 45
+"txf_cfm_paro"
+"MEDIANO_AZUL"
+1 246.6140794104514 176.5644820858876 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+44 0 0 0 0 0
+E E E
+0
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+5
+"shadowOffset" "[5,5]"
+"shadowColor" "{63,63,63,70}"
+"shadowRadius" "18"
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+7
+LANG:10001 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10009 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10008 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10018 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  244 149 413 176
+3 "6s" 6 0 0 10 0 -1  "main(mapping event)
+{
+  float tiempo;
+  tiempo=tecladoFaceplates($INST,\"keypad\");
+  motor.cambioTiempoVigilanciaParo(tiempo); //setea en DATOS_ALARMA.Xt_TiempoVigilancia_CP_F1
+}
+" 0
+ "main()
+{
+   dpConnect(\"cambiar_cfm_paro\", accionamiento_motor_s_var.get_tiempovigilancia_cp_f1());  //Static.DATOS_ALARMA.Xt_TiempoVigilancia_CP
+}
+
+void cambiar_cfm_paro(string dp, int estado){
+  if(!cfm_paro_seleccionado)  setValue(\"\", \"text\", estado);
+}
+" 0
+ E
+14 47
+"campo_invisible"
+""
+1 150 20 E E E 1 E 1 E N "_WindowText" E N "_Transparent" E E
+ E E
+46 0 0 0 0 0
+E E E
+1
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+3
+"transparentForMouse" ""
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+6
+LANG:10001 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10010 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10011 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10009 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10008 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10018 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  147.9673903723131 18.2623266825025 151.9673903723131 22.2623266825025
+3 "0s" 0 0 0 0 0 -1  E E E
+29 92
+"label_cfm_marcha"
+"MEDIANO_AZUL"
+1 256 62 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+91 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string CFM. MARCHA"
+"styleSheet" "string "
+"alignment" "enum 132"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,12,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  254 53.00000000000001 403 67
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 94
+"label_cfm_paro"
+"MEDIANO_AZUL"
+1 256 141.0364784450396 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+93 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string CFM. PARO"
+"styleSheet" "string "
+"alignment" "enum 132"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,12,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  254 132.0364784450396 403 146.0364784450396
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 95
+"l_tag"
+""
+1 210.3178430408134 30.08528357258179 E E E 1 E 1 E N "_3DText" E N "_3DFace" E E
+ E E
+94 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+4
+"text" "string 0358x9"
+"alignment" "enum 132"
+"styleSheet" "string "
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  14.31784304081346 10.08528357258179 131.3178430408134 32.0852835725818
+5 Label
+0
+"main()
+{
+  this.visible($TAG);
+  this.text(dpGetAlias($INST + \".\"));
+}" 0
+29 96
+"Label125"
+"MEDIANO_AZUL"
+1 430.4211477297163 84.5 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+95 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string seg"
+"styleSheet" "string "
+"alignment" "enum 132"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  430.018463165958 69.71428571428572 460.018463165958 92.71428571428572
+5 Label
+0
+E29 97
+"Label3"
+"MEDIANO_AZUL"
+1 430.4396108956742 162.5 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+96 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string seg"
+"styleSheet" "string "
+"alignment" "enum 132"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  430.0369263319159 147.7142857142857 460.0369263319159 170.7142857142857
+5 Label
+0
+E20 98
+"CHECK_BOX4"
+"PEQUENIO_AZUL"
+1 24.58578511800067 270.3097014731082 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "_Transparent" E E
+ E E
+97 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+2
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+6
+LANG:10001 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,12,5,75,0,0,0,0,0,Negrita
+LANG:10011 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10009 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10008 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10018 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  22.58578511800067 268.3097014731082 210.9089215204067 301.3097014731082
+1
+T 
+6
+LANG:10001 3 ???
+LANG:10010 15 REGISTRAR MOTOR
+LANG:10011 3 ???
+LANG:10009 3 ???
+LANG:10008 3 ???
+LANG:10018 3 ???
+
+0 
+2
+LANG:10001 0 
+LANG:10010 0 
+E E
+0 0 0 0 0
+0
+"main()
+{
+  this.text(0,\"REGISTRAR MOTOR\\nEN BASE DE DATOS\");
+  bool bbdd;
+
+  dpGet(accionamiento_motor_s_var.get_archivado_bbdd(), bbdd);
+
+  if(bbdd){
+    this.state(0) = 1;
+  }else{
+    this.state(0) = 0;
+  }
+}
+" 0
+"main(int button, int state)
+{
+  motor.cambioAlmacenado(this.state(0)); //setea en archivado_bbdd
+}
+" 0
+6 101
+"RECTANGLE126"
+""
+1 209 106.0000000000002 E E E 1 E 1 E N {0,0,0} E N "LIB_IRC_AZUL_18" E E
+ E E
+100 0 0 0 0 0
+E E E
+0
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+5
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E -1 1 3 2 1 E 1 0 0.7777777777777777 47.50000000000003 265.5555555555554 1 E 209 106.0000000000002 214 115
+29 115
+"txf_enc_alarmas"
+"MEDIANO_AZUL"
+1 176 187.0364784450396 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+114 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string ALARMAS"
+"styleSheet" "string "
+"alignment" "enum 132"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,12,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  174 324 342 342
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+6 116
+"RECTANGLE1"
+""
+1 90 200 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "LIB_IRC_AZUL_03" E E
+ E E
+115 0 0 0 0 0
+E E E
+0
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+5
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E 0 2 3 2 1 E 1.747444138625999 0 1 -146.129638412571 120.1548507365541 1 E 90 200 376 226
+29 117
+"txf_cm"
+"MEDIANO_AZUL"
+1 102.3874302472436 396.0364784450396 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+116 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string CONFIRMACIÓN MARCHA"
+"styleSheet" "string QWidget{font-family: \"Tahoma\"; font-size: 15px; font-style: normal; font-weight: 700; }QWidget:enabled {background: #00000000; }"
+"alignment" "enum 128"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,12,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  99.42671501251226 387.0364784450396 320.0000000000001 401.0364784450396
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 118
+"txf_cp"
+"MEDIANO_AZUL"
+1 102.4276987036195 421 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+117 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string CONFIRMACIÓN PARO"
+"styleSheet" "string QWidget{font-family: \"Tahoma\"; font-size: 15px; font-style: normal; font-weight: 700; }QWidget:enabled {background: #00000000; }"
+"alignment" "enum 128"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,12,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  99.42671501251226 412 323 426
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 119
+"txf_fe"
+"MEDIANO_AZUL"
+1 102.2800476969081 445.6548507365541 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+118 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string FALLO EXTERNO"
+"styleSheet" "string QWidget{font-family: \"Tahoma\"; font-size: 15px; font-style: normal; font-weight: 700; }QWidget:enabled {background: #00000000; }"
+"alignment" "enum 128"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,12,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  99.42671501251226 436.6548507365541 311.9999999999999 450.6548507365541
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 120
+"txf_fc"
+"MEDIANO_AZUL"
+1 102.4008530660356 471.1730899590739 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+119 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string FALLO COMUNICACIONES"
+"styleSheet" "string QWidget{font-family: \"Tahoma\"; font-size: 15px; font-style: normal; font-weight: 700; }QWidget:enabled {background: #00000000; }"
+"alignment" "enum 128"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,12,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  99.4267150125122 462.1730899590739 321 476.1730899590739
+5 Label
+0
+E29 121
+"txf_vf"
+"MEDIANO_AZUL"
+1 101.4267150125123 371.0364784450396 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+120 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string FALLO VARIADOR"
+"styleSheet" "string "
+"alignment" "enum 128"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,12,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  99.42671501251226 362.0364784450396 248.4267150125123 376.0364784450396
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+13 122
+"PUSH_BUTTON1"
+"PEQUENIO_BLANCO"
+1 298 276.3454492986902 E E E 1 E 1 E N "_ButtonText" E N "_Button" E E
+ E E
+121 0 0 0 0 0
+E E E
+8
+2
+LANG:10001 0 
+LANG:10010 0 
+
+1
+"layoutAlignment" "AlignNone"
+2
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  283 264.3097014731082 374 305.3097014731082
+
+P 
+4294967295
+"pictures/iconos/faceplates/fp_config_avanzada/fp_config_avanzada_on.svg"
+2
+LANG:10001 0 
+LANG:10010 0 
+"main(mapping event)
+{
+  string inst;
+  ChildPanelOnCentralModal(\"vision/faceplates/531_LIB_ACCIONAMIENTO_MOTOR_S_VARIADOR/531_LIB_ACCIONAMIENTO_MOTOR_S_VARIADOR_TABLA.pnl\", \"531_LIB_ACCIONAMIENTO_MOTOR_S_VARIADOR_TABLA.pnl\", makeDynString(\"$INST:\" + $INST));
+}" 0
+ E E E
+6 123
+"RECTANGLE130"
+""
+1 240 190 E E E 1 E 1 E N {0,0,0} E N "LIB_IRC_AZUL_01" E E
+ E E
+122 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E -1 1 3 2 1 E 1.78 0 0.78 -143.2 117.1097014731082 1 E 240 190 290 240
+7 124
+"ELLIPSE4"
+""
+1 119 291 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "_3DFace" E E
+ E E
+123 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+"main()
+{
+  dyn_string colores = makeDynString(\"LIB_IRC_ROJO_07\",
+                                     \"LIB_IRC_GRIS_03\");
+
+  dpConnectUserData(\"cambiarRellenoCirculo\", colores, accionamiento_motor_s_var.get_alarma_vf());//Cambia el color de fondo según el estado de la alarma
+}
+" 0
+ E 0 2 3 2 1 E 1 0 1 -44.55099766595887 78.01489599828074 1 E 119.4469825293523 291.0215824467589 10 10
+6 125
+"RECTANGLE131"
+""
+1 20 140 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N {255,255,255} E E
+ E E
+124 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E 0 2 3 2 1 E 8.316666666666666 0 4.500000000000004 -154.3333333333333 -275.0000000000007 0 E 20 140 80 170
+7 126
+"ELLIPSE5"
+""
+1 119 291 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "_3DFace" E E
+ E E
+125 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+"main()
+{
+  dyn_string colores = makeDynString(\"LIB_IRC_ROJO_07\",
+                                     \"LIB_IRC_GRIS_03\");
+
+  dpConnectUserData(\"cambiarRellenoCirculo\", colores, accionamiento_motor_s_var.get_alarma_cm_f1());//Cambia el color de fondo según el estado de la alarma
+}
+" 0
+ E 0 2 3 2 1 E 1 0 1 -44.55099766595887 103.0148959982807 1 E 119.4469825293523 291.0215824467589 10 10
+7 127
+"ELLIPSE6"
+""
+1 119 291 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "_3DFace" E E
+ E E
+126 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+"main()
+{
+  dyn_string colores = makeDynString(\"LIB_IRC_ROJO_07\",
+                                     \"LIB_IRC_GRIS_03\");
+
+  dpConnectUserData(\"cambiarRellenoCirculo\", colores, accionamiento_motor_s_var.get_alarma_cp_f1());//Cambia el color de fondo según el estado de la alarma
+}
+" 0
+ E 0 2 3 2 1 E 1 0 1 -44.55099766595887 127.9784175532411 1 E 119.4469825293523 291.0215824467589 10 10
+7 128
+"ELLIPSE9"
+""
+1 119 291 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "_3DFace" E E
+ E E
+127 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+"main()
+{
+  dyn_string colores = makeDynString(\"LIB_IRC_ROJO_07\",
+                                     \"LIB_IRC_GRIS_03\");
+
+  dpConnectUserData(\"cambiarRellenoCirculo\", colores, accionamiento_motor_s_var.get_alarma_ext());//Cambia el color de fondo según el estado de la alarma
+}
+" 0
+ E 0 2 3 2 1 E 1 0 1 -44.55099766595887 152.6332682897952 1 E 119.4469825293523 291.0215824467589 10 10
+7 129
+"ELLIPSE10"
+""
+1 119 291 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "_3DFace" E E
+ E E
+128 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+"main()
+{
+  dyn_string colores = makeDynString(\"LIB_IRC_ROJO_07\",
+                                     \"LIB_IRC_GRIS_03\");
+
+  dpConnectUserData(\"cambiarRellenoCirculo\", colores, accionamiento_motor_s_var.get_fallo_com());//Cambia el color de fondo según el estado de la alarma
+}
+" 0
+ E 0 2 3 2 1 E 1 0 1 -44.55099766595887 178.151507512315 1 E 119.4469825293523 291.0215824467589 10 10
+0
+LAYER, 1 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 2 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 3 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 4 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 5 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 6 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 7 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+0

@@ -37,6 +37,7 @@ class accionamiento : SmartObject
   float Xt_TiempoVigilancia_CM_F1;
   //[SnDpeGroup=DATOS_ALARMA]
   float Xt_TiempoVigilancia_CP_F1;
+
   bool archivado_bbdd;
 
   public bool isXd_INHA()
@@ -302,6 +303,7 @@ class accionamiento : SmartObject
 
   public accionamiento()
   {
+
   }
 
   public marchaManual(){

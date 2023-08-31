@@ -10,6 +10,7 @@ class valvula : accionamiento
 
   public valvula()
   {
+
   }
 
   public float getXt_TiempoVigilancia_POS()

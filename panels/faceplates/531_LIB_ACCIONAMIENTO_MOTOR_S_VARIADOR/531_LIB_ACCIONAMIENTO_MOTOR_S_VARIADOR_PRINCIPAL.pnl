@@ -1,0 +1,1633 @@
+V 14
+7
+LANG:10001 0 
+LANG:10010 23 MOTOR_S_VF_AN_PRINCIPAL
+LANG:10011 0 
+LANG:10009 20 MOTOR_S_VF_PRINCIPAL
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+PANEL,-1 -1 520 500 N "LIB_IRC_BLANCO" 5
+"$AUTO_MODIF"
+"$ELEM"
+"$INHA"
+"$INST"
+"$TAG"
+E E E E E 1 -1 -1 0  0 0
+""0  1
+E "//--------------------------------------------------------------------------------
+//Clases importadas a utilizar por las funciones de la librería
+lib_accionamiento_motor_s_var accionamiento_motor_s_var = lib_accionamiento_motor_s_var($INST);
+lib_comunicacion_vf comunicacion_vf = lib_comunicacion_vf($INST + \"_VF\");
+
+//---------------Variables auxiliares---------------------
+bool tiempo_cm_seleccionado = FALSE;
+bool tiempo_cp_seleccionado = FALSE;
+bool tiempo_arranque_seleccionado = FALSE;
+bool tiempo_paro_seleccionado = FALSE;
+bool consigna_manual_seleccionado = FALSE;
+bool consigna_auto_seleccionado = FALSE;
+string tipoInst = dpTypeName($INST);
+" 0
+ 5
+"CBRef" "1"
+"EClose" E
+"type" "BG_ACCIONAMIENTO_MOTOR_S_VAR"
+"dpi" "96"
+"pdpi" "96"
+0 0 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+2
+LANG:10001 0 
+LANG:10010 0 
+6 125
+"RECTANGLE1"
+""
+1 90 200 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "LIB_IRC_AZUL_03" E E
+ E E
+124 0 0 0 0 0
+E E E
+0
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+5
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E 0 2 3 2 1 E 1.747444138625999 0 1 -146.0133796713125 120.7814435031402 1 E 90 200 376 226
+6 6
+"RECTANGLE126"
+""
+1 209 106.0000000000002 E E E 1 E 1 E N {0,0,0} E N "LIB_IRC_AZUL_18" E E
+ E E
+5 0 0 0 0 0
+E E E
+0
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+5
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E -1 1 3 2 1 E 1 0 0.7777777777777777 47.61625874125858 265.5555555555554 1 E 209 106.0000000000002 214 115
+14 23
+"txf_consigna_manual"
+"MEDIANO_AZUL"
+1 360.7070214080148 222.355243386558 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+23 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+6
+"shadowOffset" "[5,5]"
+"shadowColor" "{63,63,63,70}"
+"shadowRadius" "18"
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10009 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10008 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10018 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  358 215 476 240
+3 "8s" 8 0 0 10 0 -1  "main(mapping event)
+{
+  /*Permisos de usuario - Operación. Devuelve un bool.
+  Parametros obligatorios de la función:
+    - Número de permiso que se comprobará. Desde 10 a 32. De 0 a 9 se usan para Wincc OA.
+    - Comprobar permiso de forma individual (TRUE) o el número de permiso y los superiores (FALSE).
+  Parametros opcionales de la función:
+    - Mostrar mensaje - El usuario no tiene permisos. Por defecto (TRUE).
+  */
+  int n_permiso = 11;
+  bool permiso = permisos_usuario_operacion(n_permiso, FALSE);
+
+  if (permiso)
+  {
+    teclado(accionamiento_motor_s_var.get_m_csg(), \"keypad\");
+  }
+}
+" 0
+ "main()
+{
+  dpConnect(\"cambiar_consigna\", accionamiento_motor_s_var.get_m_csg(), accionamiento_motor_s_var.get_xi_modo());  //Devuelven \"InOut.Xr_M_CSG\", \"Input.Xi_MODO\"
+}
+
+//Habilita o deshabilita el elemento según el modo
+void cambiar_consigna(string dp1, int estado, string dp2, int modo){
+  if(!consigna_manual_seleccionado)  setValue(\"\", \"text\", estado);  //Variable para saber si el campo está seleccionado
+  else if(modo != 0)  setValue(\"\", \"enabled\", TRUE);
+  else setValue(\"\", \"enabled\", FALSE);
+}
+" 0
+ E
+14 24
+"txf_velocidad"
+"MEDIANO_AZUL"
+1 360 275.2192754759235 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+25 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+7
+"shadowOffset" "[5,5]"
+"shadowColor" "{63,63,63,70}"
+"shadowRadius" "18"
+"transparentForMouse" ""
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10009 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10008 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10018 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  358 267 476 292
+3 "8s" 8 0 0 10 0 -1  E "main()
+{
+  dpConnect(\"cambiar_velocidad\", accionamiento_motor_s_var.get_velocidad());  //Devuelve \"Input.Xr_Dato_2\"
+  string dp = $INST;
+
+  if (patternMatch(\"*MotorPrincipal*\", dp))
+  {
+    this.visible(FALSE);
+  }
+}
+
+//Setea en el elemento el valor del estado
+void cambiar_velocidad(string dp, float estado)
+{
+  setValue(\"\", \"text\", estado);
+}
+" 0
+ E
+14 26
+"txf_intensidad"
+"MEDIANO_AZUL"
+1 360.7285672329111 248.5656452453487 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+27 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+7
+"shadowOffset" "[5,5]"
+"shadowColor" "{63,63,63,70}"
+"shadowRadius" "18"
+"transparentForMouse" ""
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10009 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10008 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10018 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  358 241 476 266
+3 "0.2f" 3 0 0 10 0 -1  E "main()
+{
+  dpConnect(\"cambiar_intensidad\", accionamiento_motor_s_var.get_intensidad());  //Devuelve \"Input.Xr_Dato_3\"
+}
+
+//Setea en el elemento el valor del estado
+void cambiar_intensidad(string dp, float estado){
+  setValue(\"\", \"text\", estado);
+}
+" 0
+ E
+14 28
+"txf_frecuencia"
+"MEDIANO_AZUL"
+1 360.7070214080148 300.4027039399186 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+36 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+7
+"shadowOffset" "[5,5]"
+"shadowColor" "{63,63,63,70}"
+"shadowRadius" "18"
+"transparentForMouse" ""
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10009 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10008 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10018 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  358 293 476 318
+3 "0.2f" 3 0 0 10 0 -1  E "main()
+{
+  dpConnect(\"cambiar_frecuencia\", accionamiento_motor_s_var.get_frecuencia());  //Devuelve \"Input.Xr_Dato_1\"
+  string dp = $INST;
+
+  if (patternMatch(\"*MotorPrincipal*\", dp) || patternMatch(\"*MotorTrasero*\", dp))
+  {
+    this.visible(FALSE);
+
+  }
+}
+
+//Setea en el elemento el valor del estado
+void cambiar_frecuencia(string dp, float estado)
+{
+  setValue(\"\", \"text\", estado);
+}
+" 0
+ E
+13 39
+"btn_manual_on"
+""
+1 255.503549666361 99 E E E 1 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+39 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+4
+"hoverbclr" "N \"AZUL_01\""
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10010 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10011 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10009 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10008 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10018 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  253.5035496663608 96.5801994787341 320.5035496663608 163.5801994787341
+
+P 
+4294967295
+"pictures/iconos/faceplates/fp_on/on_off.svg"
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+"main(mapping event)
+{
+  int error;
+  string descripcion, motivo, valor_ini, valor_fin;
+  /*Permisos de usuario - Operación. Devuelve un bool.
+  Parametros obligatorios de la función:
+    - Número de permiso que se comprobará. Desde 10 a 32. De 0 a 9 se usan para Wincc OA.
+    - Comprobar permiso de forma individual (TRUE) o el número de permiso y los superiores (FALSE).
+  Parametros opcionales de la función:
+    - Mostrar mensaje - El usuario no tiene permisos. Por defecto (TRUE).
+  */
+  int n_permiso = 11;
+  bool permiso = permisos_usuario_operacion(n_permiso, FALSE);
+
+  if (permiso)
+  {
+    motor.marchaManual(); // (Seteamos \"InOut.Xd_M_OM\" a 1)
+
+    valor_ini = \"-\";
+    valor_fin = \"Arranque Manual\";
+
+    descripcion = dpGetAlias($INST + \".\");
+    motivo = \"Cambio en la Operativa Manual: \" + descripcion;
+
+    writeAuditEntry(accionamiento_motor_s.get_m_om_f1(), valor_ini, valor_fin, error, motivo);
+  }
+}
+" 0
+ E E "main()
+{
+  //Recogemos y analizamos la hoja de estilos utilizada, para cargar las imágenes correspondientes
+   string textoEstilo = getApplicationProperty(\"styleSheet\");
+   if(textoEstilo.contains(\"blackStyle{}\"))
+  {
+    this.fill(\"[pattern,[tile,any,C:/WinCC_OA_Proj_3_18/Scada_Libreria_DEUSER_3_18/pictures/iconos/faceplates/fp_on/on_blanco_off.svg]]\");
+  }
+
+  if(!dpExists(accionamiento_motor_s_var.get_yb_est()) && !dpExists(accionamiento_motor_s_var.get_valor_xi_modo())){  //Comprobamos si no existe el DP y le añadimos atributos de color al componente.'accionamiento_motor_s_var' es la instancia creada para leer librerías
+    setMultiValue(\"\", \"color\", \"LIB_IRC_MORADO_01\", \"\", \"foreCol\", \"LIB_IRC_MORADO_01\");
+    return;
+  }
+
+  dpConnectUserData(\"cambiar_estado_btn_fp\", this.name(), accionamiento_motor_s_var.get_yb_est(), accionamiento_motor_s_var.get_xi_modo());
+}
+
+//Cambia las características del objeto (botón) y su estado, en función de si está habilitado o no.
+void cambiar_estado_btn_fp(string nom_obj, string dp1, int estado, string dp2, int habilitado){
+  shape shape_objeto;
+  string path_downpixmap, path_uppixmap;
+
+  shape_objeto = getShape(nom_obj);  //Recuperamos el shape del objeto que se va a cambiar su estado
+  path_downpixmap = shape_objeto.buttonDownPixmap();  //Recuperamos el buttonDownPixmap de relleno del objeto
+  path_uppixmap = shape_objeto.buttonUpPixmap();  //Recuperamos el buttonUpPixmap de relleno del objeto
+
+  if(path_downpixmap.isEmpty())  path_downpixmap = path_uppixmap;  //Si el path de la imagen del button DownPixmap está vacia se rellena con la del UpPixmap que debe estar rellena al colocar el button
+
+  if(habilitado == 0 || habilitado == 11 || habilitado == 255){
+    setValue(nom_obj, \"transparentForMouse\", 1);  //Establecemos el nuevo estado de botón
+    if(strpos(path_downpixmap,\"inha\") < 0) strreplace(path_downpixmap,\"on_\",\"on_inha_\");
+    if(strpos(path_uppixmap,\"inha\") < 0) strreplace(path_uppixmap,\"on_\",\"on_inha_\");
+    if(estado == 2){
+      strreplace(path_downpixmap, \"_off.\", \"_on.\");  //Remplazamos la ruta de la imagen del button DownPixmap de OFF A ON
+      strreplace(path_uppixmap, \"_off.\", \"_on.\");  //Remplazamos la ruta de la imagen del button UpPixmap de OFF A ON
+    }else{
+      strreplace(path_downpixmap, \"_on.\", \"_off.\");  //Remplazamos la ruta de la imagen del button DownPixmap de ON A OFF
+      strreplace(path_uppixmap, \"_on.\", \"_off.\");  //Remplazamos la ruta de la imagen del button UpPixmap de ON A OFF
+    }
+  }else{
+    setValue(nom_obj, \"transparentForMouse\", 0);  //Establecemos el nuevo estado de botón
+    if(estado == 12 || estado == 22){
+      strreplace(path_downpixmap, \"_inha\", \"\");  //Remplazamos la ruta de la imagen del button DownPixmap INHA por el normal
+      strreplace(path_downpixmap, \"_off.\", \"_on.\");  //Remplazamos la ruta de la imagen del button DownPixmap de OFF A ON
+      strreplace(path_uppixmap, \"_inha\", \"\");  //Remplazamos la ruta de la imagen del button UpPixmap INHA por el normal
+      strreplace(path_uppixmap, \"_off.\", \"_on.\");  //Remplazamos la ruta de la imagen del button UpPixmap de OFF A ON
+    }else{
+      strreplace(path_downpixmap, \"_inha\", \"\");  //Remplazamos la ruta de la imagen del button DownPixmap INHA por el normal
+      strreplace(path_downpixmap, \"_on.\", \"_off.\");  //Remplazamos la ruta de la imagen del button DownPixmap de ON A OFF
+      strreplace(path_uppixmap, \"_inha\", \"\");  //Remplazamos la ruta de la imagen del button UpPixmap INHA por el normal
+      strreplace(path_uppixmap, \"_on.\", \"_off.\");  //Remplazamos la ruta de la imagen del button UpPixmap de ON A OFF
+    }
+  }
+
+  setValue(nom_obj, \"buttonType\", BT_PIXMAP,
+                    \"buttonDownPixmap\", path_downpixmap,
+                    \"buttonUpPixmap\", path_uppixmap);
+}
+" 0
+
+13 40
+"btn_manual_off"
+""
+1 327.4700098862975 99 E E E 1 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+42 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+4
+"hoverbclr" "N \"AZUL_01\""
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10010 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10011 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10009 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10008 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10018 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  325.0070993327215 96.5801994787341 392.0070993327216 163.5801994787341
+
+P 
+4294967295
+"pictures/iconos/faceplates/fp_off/off_off.svg"
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+"main(mapping event)
+{
+  int error;
+  string descripcion, motivo, valor_ini, valor_fin;
+  motor.paroManual();  //Mediante la instacia de librería, paramos el motor_s_vf_an de forma manual (Seteamos \"InOut.Xd_M_OM\" a 0)
+
+  valor_ini = \"Automático\";
+  valor_fin = \"Paro Arranque Manual\";
+
+  descripcion = dpGetAlias($INST + \".\");
+  motivo = \"Cambio en la Operativa Manual: \" + descripcion;
+
+  writeAuditEntry(accionamiento_motor_s.get_m_om_f1(), valor_ini, valor_fin, error, motivo);
+
+}
+" 0
+ E E "main()
+{
+  //Recogemos y analizamos la hoja de estilos utilizada, para cargar las imágenes correspondientes
+   string textoEstilo = getApplicationProperty(\"styleSheet\");
+   if(textoEstilo.contains(\"blackStyle{}\"))
+  {
+    this.fill(\"[pattern,[tile,any,C:/WinCC_OA_Proj_3_18/Scada_Libreria_DEUSER_3_18/pictures/iconos/faceplates/fp_off/off_blanco_off.svg]]\");
+  }
+
+  if(!dpExists(accionamiento_motor_s_var.get_yb_est()) && !dpExists(accionamiento_motor_s_var.get_xi_modo())){  //Comprobamos si no existe el DP y le añadimos atributos de color al componente.'accionamiento_motor_s_var' es la instancia creada para leer librerías
+    setMultiValue(\"\", \"color\", \"LIB_IRC_MORADO_01\", \"\", \"foreCol\", \"LIB_IRC_MORADO_01\");
+    return;
+  }
+
+  dpConnectUserData(\"cambiar_estado_btn_fp\", this.name(), accionamiento_motor_s_var.get_yb_est(), accionamiento_motor_s_var.get_xi_modo());
+}
+
+//Cambia las características del objeto (botón) y su estado, en función de si está habilitado o no.
+void cambiar_estado_btn_fp(string nom_obj, string dp1, int estado, string dp2, int habilitado){
+  shape shape_objeto;
+  string path_downpixmap, path_uppixmap;
+
+  shape_objeto = getShape(nom_obj);  //Recuperamos el shape del objeto que se va a cambiar su estado
+  path_downpixmap = shape_objeto.buttonDownPixmap();  //Recuperamos el buttonDownPixmap de relleno del objeto
+  path_uppixmap = shape_objeto.buttonUpPixmap();  //Recuperamos el buttonUpPixmap de relleno del objeto
+
+  if(path_downpixmap.isEmpty())  path_downpixmap = path_uppixmap;  //Si el path de la imagen del button DownPixmap está vacia se rellena con la del UpPixmap que debe estar rellena al colocar el button
+
+  if(habilitado == 0 || habilitado == 11 || habilitado == 255){
+    setValue(nom_obj, \"transparentForMouse\", 1);  //Establecemos el nuevo estado de botón
+
+    if(strpos(path_downpixmap,\"inha\") < 0) strreplace(path_downpixmap,\"off_\",\"off_inha_\");
+    if(strpos(path_uppixmap,\"inha\") < 0) strreplace(path_uppixmap,\"off_\",\"off_inha_\");
+    if(estado!=2){
+      strreplace(path_downpixmap, \"_off.\", \"_on.\");  //Remplazamos la ruta de la imagen del button DownPixmap de OFF A ON
+      strreplace(path_uppixmap, \"_off.\", \"_on.\");  //Remplazamos la ruta de la imagen del button UpPixmap de OFF A ON
+    }else{
+      strreplace(path_downpixmap, \"_on.\", \"_off.\");  //Remplazamos la ruta de la imagen del button DownPixmap de ON A OFF
+      strreplace(path_uppixmap, \"_on.\", \"_off.\");  //Remplazamos la ruta de la imagen del button UpPixmap de ON A OFF
+    }
+  }else{
+    setValue(nom_obj, \"transparentForMouse\", 0);  //Establecemos el nuevo estado de botón
+    if(estado != 12 && estado != 22 && estado != 23){
+      strreplace(path_downpixmap, \"_inha\", \"\");  //Remplazamos la ruta de la imagen del button DownPixmap INHA por el normal
+      strreplace(path_downpixmap, \"_off.\", \"_on.\");  //Remplazamos la ruta de la imagen del button DownPixmap de OFF A ON
+      strreplace(path_uppixmap, \"_inha\", \"\");  //Remplazamos la ruta de la imagen del button UpPixmap INHA por el normal
+      strreplace(path_uppixmap, \"_off.\", \"_on.\");  //Remplazamos la ruta de la imagen del button UpPixmap de OFF A ON
+    }else{
+      strreplace(path_downpixmap, \"_inha\", \"\");  //Remplazamos la ruta de la imagen del button DownPixmap INHA por el normal
+      strreplace(path_downpixmap, \"_on.\", \"_off.\");  //Remplazamos la ruta de la imagen del button DownPixmap de ON A OFF
+      strreplace(path_uppixmap, \"_inha\", \"\");  //Remplazamos la ruta de la imagen del button UpPixmap INHA por el normal
+      strreplace(path_uppixmap, \"_on.\", \"_off.\");  //Remplazamos la ruta de la imagen del button UpPixmap de ON A OFF
+    }
+  }
+
+  setValue(nom_obj, \"buttonType\", BT_PIXMAP,
+                    \"buttonDownPixmap\", path_downpixmap,
+                    \"buttonUpPixmap\", path_uppixmap);
+}
+" 0
+
+6 41
+"RECTANGLE129"
+""
+1 40 90 E E E 1 E 1 E N {0,0,0} E N {255,255,255} E E
+ E E
+40 0 0 0 0 0
+E E E
+0
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+8
+"shadowOffset" "[5,5]"
+"shadowColor" "{63,63,63,80}"
+"shadowRadius" "18"
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+"main()
+{
+  mapping estados_motor;
+
+  if($ELEM == \"cinta\")
+    setMultiValue(this,\"fill\",\"[pattern,[fit,any,iconos/faceplates/01_025_cinta_mediana/cinta_mediana_gris.svg]]\",
+                  this, \"shadowOffset\", 5, 5);
+  else if($ELEM == \"bomba\")
+    setMultiValue(this,\"fill\",\"[pattern,[fit,any,iconos/faceplates/01_006_bomba_derecha/bomba_derecha_gris.svg]]\",
+                  this, \"shadowOffset\", 5, 5);
+  else if($ELEM == \"sinfin\")
+    setMultiValue(this,\"fill\",\"[pattern,[fit,any,iconos/faceplates/01_033_sinfin/sinfin_gris.svg]]\",
+                  this, \"shadowOffset\", 5, 5);
+
+  estados_motor = cambiarEstadoClaseGif($INST);//Función para obtener el mapa con los estados de los motores
+
+  if(dpExists(estados_motor.value(tipoInst, \"\")))  dpConnectUserData(\"cambiarEstadoObjetoGif\", this.name(), estados_motor.value(tipoInst, \"\")); //Modifica el patternfill del motor según su estado(obtenido del mapa de estados) (faceplates con gif)
+  else colorSombraMaquinaError(this.name()); //Setea el color (Rojo) de la sombra del objeto (motor)
+}
+" 0
+ E -1 1 3 2 1 E 2.216666666666666 0 1.081818181818182 -81.42175383084256 -60.18181818181823 2  1 0  "pictures/iconos/faceplates/01_001_motor_derecha/motor_derecha_gris.svg" 4294967295 E 40 90 100 200
+14 43
+"txf_consigna_auto"
+"MEDIANO_AZUL"
+1 360.7070214080148 196.2634867149694 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+22 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+6
+"shadowOffset" "[5,5]"
+"shadowColor" "{63,63,63,70}"
+"shadowRadius" "18"
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10009 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10008 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10018 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  358 189 476 214
+3 "8s" 8 0 0 10 0 -1  "main(mapping event)
+{
+  float consigna;
+  tiempo=tecladoFaceplates($INST,\"keypad\");
+  motor.cambioTiempoVigilanciaMarcha(tiempo); //setea en DATOS_ALARMA.Xt_TiempoVigilancia_CM_F1
+}
+" 0
+ "main()
+{
+  if($AUTO_MODIF == \"FALSE\") setValue(\"\", \"enabled\", FALSE);
+  dpConnect(\"cambiar_consigna\", accionamiento_motor_s_var.get_a_csg(), accionamiento_motor_s_var.get_xi_modo());  //Devuelven \"InOut.Xr_A_CSG\", \"Input.Xi_MODO\"
+}
+//Habilita o deshabilita el elemento según el modo
+void cambiar_consigna(string dp1, int estado, string dp2, int modo){
+  if(!consigna_auto_seleccionado)  setValue(\"\", \"text\", estado);  //Variable para saber si el campo está seleccionado
+  else if(modo == 0)  setValue(\"\", \"enabled\", TRUE);
+  else  setValue(\"\", \"enabled\", FALSE);
+}
+" 0
+ E
+29 57
+"EMBEDDED_MODULE1"
+""
+1 -83.2612944338365 4.011178841786805 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+56 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+9
+"newPanelAnimDuration" "int 0"
+"oldPanelAnimDuration" "int 0"
+"newPanelAnimateOpacity" "bool FALSE"
+"oldPanelAnimateOpacity" "bool FALSE"
+"newPanelAnimateSize" "bool FALSE"
+"oldPanelAnimateSize" "bool FALSE"
+"newPanelAnimType" "string None"
+"oldPanelAnimType" "string None"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  146.7387055661635 14.02097332091629 505.7387055661635 83.08855522690976
+15 Canvas.Canvas.1
+0
+"main()
+{
+  if($INHA == TRUE || $INHA == \"\")  //Comprobamos si está activo el modo 'inhabilitado' para seleccionar el tipo de botonera
+    RootPanelOnModule(\"vision/faceplates/531_LIB_ACCIONAMIENTO_MOTOR_S_VARIADOR/BOTONERA_ACCIONAMIENTO_MOTOR_S_VARIADOR_INHA.pnl\", \"BOTONERA_ACCIONAMIENTO_MOTOR_S_VARIADOR_INHA\", this.ModuleName(), makeDynString(\"$INST:\" + $INST));
+  else
+    RootPanelOnModule(\"vision/faceplates/531_LIB_ACCIONAMIENTO_MOTOR_S_VARIADOR/BOTONERA_ACCIONAMIENTO_MOTOR_S_VARIADOR.pnl\", \"BOTONERA_ACCIONAMIENTO_MOTOR_S_VARIADOR\", this.ModuleName(), makeDynString(\"$INST:\" + $INST));
+}
+" 0
+29 58
+"l_tag"
+""
+1 209.7560542302373 30.0111788417868 E E E 1 E 1 E N "_3DText" E N "_3DFace" E E
+ E E
+57 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+4
+"text" "string 0358x9"
+"alignment" "enum 132"
+"styleSheet" "string "
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  13.75605423023736 10.0111788417868 130.7560542302373 32.01117884178682
+5 Label
+0
+"main()
+{
+  this.visible($TAG);
+  this.text(dpGetAlias($INST + \".\"));
+}" 0
+29 96
+"txf_vf"
+"MEDIANO_AZUL"
+1 -31.16991335453451 182.0137320104922 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+95 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string FALLO VARIADOR"
+"styleSheet" "string "
+"alignment" "enum 128"
+"lineWidth" "int 1"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  93.83008664546549 360.0137320104923 304.8300866454655 378.0137320104923
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 97
+"txf_cm"
+"MEDIANO_AZUL"
+1 -36.86096975973198 207.0162899931825 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+96 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string CONFIRMACIÓN MARCHA"
+"styleSheet" "string "
+"alignment" "enum 128"
+"lineWidth" "int 1"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  93.97061575853829 385.0162899931825 314.8143321133784 403.0162899931825
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 98
+"txf_cp"
+"MEDIANO_AZUL"
+1 -36.57964069538462 232.0188479758727 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+97 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string CONFIRMACIÓN PARO"
+"styleSheet" "string "
+"alignment" "enum 128"
+"lineWidth" "int 1"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  94.25194482288566 410.0188479758727 315.0956611777258 428.0188479758727
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 99
+"txf_fe"
+"MEDIANO_AZUL"
+1 -36.57964069538473 257.021405958563 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+98 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string FALLO EXTERNO"
+"styleSheet" "string "
+"alignment" "enum 128"
+"lineWidth" "int 1"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  94.25194482288555 435.021405958563 315.0956611777258 453.021405958563
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 104
+"Label126"
+"MEDIANO_AZUL"
+1 474.6556748806418 204.7857142857143 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+103 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string Hz"
+"styleSheet" "string "
+"alignment" "enum 132"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  474.2529903168834 190 504.2529903168834 213
+5 Label
+0
+"main()
+{
+  this.text = accionamiento_motor_s_var.unidad_frecuencia();
+}" 0
+29 105
+"Label127"
+"MEDIANO_AZUL"
+1 474.6556748806418 230.7857142857142 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+104 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string Hz"
+"styleSheet" "string "
+"alignment" "enum 132"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  474.2529903168834 216 504.2529903168834 239
+5 Label
+0
+"main()
+{
+  this.text = accionamiento_motor_s_var.unidad_frecuencia();
+}" 0
+29 106
+"Label128"
+"MEDIANO_AZUL"
+1 474.0574733069384 282.4085238314595 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+105 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string Hz"
+"styleSheet" "string "
+"alignment" "enum 132"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  473.5459689088686 268 507.5459689088686 291
+5 Label
+0
+"main()
+{
+  this.text = accionamiento_motor_s_var.unidad_vel();
+  string dp = $INST;
+
+  if (patternMatch(\"*MotorPrincipal*\", dp))
+  {
+    this.visible(FALSE);
+  }
+  string dp = $INST;
+  if (patternMatch(\"*MotorTrasero*\", dp))
+  {
+    this.text(\"Nm\");
+  }
+}" 0
+29 107
+"Label131"
+"MEDIANO_AZUL"
+1 474.6556748806418 256.7857142857143 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+106 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string Hz"
+"styleSheet" "string "
+"alignment" "enum 132"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  474.2529903168834 242 504.2529903168834 264.9999999999999
+5 Label
+0
+"main()
+{
+  this.text = accionamiento_motor_s_var.unidad_corriente();
+}" 0
+29 108
+"Label132"
+"MEDIANO_AZUL"
+1 474.6556748806418 308.7857142857142 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+107 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string Hz"
+"styleSheet" "string "
+"alignment" "enum 132"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  474.2529903168834 294 504.2529903168834 317
+5 Label
+0
+"main()
+{
+  this.text = accionamiento_motor_s_var.unidad_frecuencia();
+  string dp = $INST;
+
+  if (patternMatch(\"*MotorPrincipal*\", dp) || patternMatch(\"*MotorTrasero*\", dp))
+  {
+    this.visible(FALSE);
+  }
+}" 0
+29 109
+"label_csg_auto"
+"MEDIANO_AZUL"
+1 -111.8525014950314 14.49999999999994 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+108 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string CONSIGNA AUTO"
+"styleSheet" "string "
+"alignment" "enum 1"
+"lineWidth" "int 1"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  13.14749850496857 192.5 224.1474985049686 210.5
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 121
+"label_modo"
+"MEDIANO_AZUL"
+1 263.7717343619659 11.77985403587622 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+120 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string MODO FUNCIONAMIENTO"
+"styleSheet" "string "
+"alignment" "enum 132"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,12,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  230 3 432 17
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 122
+"label_operativa"
+"MEDIANO_AZUL"
+1 262 92 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+121 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string OPERATIVA MANUAL"
+"styleSheet" "string "
+"alignment" "enum 132"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,12,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  230 83 419 97
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 113
+"label_frecuencia"
+"MEDIANO_AZUL"
+1 -111.6219728848814 118.4999999999999 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+112 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string FRECUENCIA"
+"styleSheet" "string "
+"alignment" "enum 1"
+"lineWidth" "int 1"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  13.37802711511866 296.5 224.3780271151186 314.5
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+  string dp = $INST;
+  if(patternMatch(\"*MotorPrincipal*\",dp) || patternMatch(\"*MotorTrasero*\",dp)){
+    this.visible(FALSE);
+
+  }
+}" 0
+29 112
+"label_corriente"
+"MEDIANO_AZUL"
+1 -111.7583133934693 66.49999999999994 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+111 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string CORRIENTE"
+"styleSheet" "string "
+"alignment" "enum 1"
+"lineWidth" "int 1"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  13.24168660653079 244.5 224.2416866065307 262.5
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 111
+"label_vel_actual"
+"MEDIANO_AZUL"
+1 -112.4854150730023 92.49999999999989 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+110 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string VELOCIDAD ACTUAL"
+"styleSheet" "string "
+"alignment" "enum 1"
+"lineWidth" "int 1"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  12.5145849269977 270.5 223.5145849269976 288.5
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+  string dp = $INST;
+  if (patternMatch(\"*MotorPrincipal*\", dp))
+  {
+    this.visible(FALSE);
+  }
+  string dp = $INST;
+  if (patternMatch(\"*MotorTrasero*\", dp))
+  {
+    this.text(\"PAR\");
+  }
+}" 0
+29 110
+"label_csg_manual"
+"MEDIANO_AZUL"
+1 -111.9487670958735 40.49999999999991 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+109 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string CONSIGNA MANUAL"
+"styleSheet" "string "
+"alignment" "enum 1"
+"lineWidth" "int 1"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  13.05123290412645 218.5 224.0512329041263 236.5
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+29 123
+"Label133"
+"MEDIANO_AZUL"
+1 -36.7056131068275 282.0239639412532 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+122 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string FALLO COMUNICACIONES"
+"styleSheet" "string QWidget{font-family: \"Tahoma\"; font-size: 15px; font-style: normal; font-weight: 700; }QWidget:enabled {background: #00000000; }"
+"alignment" "enum 128"
+"lineWidth" "int 1"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  94.12597241144277 460.0239639412532 314.969688766283 478.0239639412532
+5 Label
+0
+E29 126
+"txf_enc_alarmas"
+"MEDIANO_AZUL"
+1 146 259.0364784450396 E E E 1 E 1 E N "_3DText" E N "_Transparent" E E
+ E E
+125 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"text" "string ALARMAS"
+"styleSheet" "string "
+"alignment" "enum 132"
+"lineWidth" "int 0"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,12,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  175 325 343 343
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"objetos\", this.name)); //Traduce el texto mostrado en función del catálogo \"objetos\"
+}" 0
+7 127
+"ELLIPSE4"
+""
+1 119 291 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "_3DFace" E E
+ E E
+126 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+"main()
+{
+  dyn_string colores = makeDynString(\"LIB_IRC_ROJO_07\",
+                                     \"LIB_IRC_GRIS_03\");
+
+  dpConnectUserData(\"cambiarRellenoCirculo\", colores, accionamiento_motor_s_var.get_alarma_vf());//Cambia el color de fondo según el estado de la alarma
+}
+" 0
+ E 0 2 3 2 1 E 1 0 1 -46.93473892470033 78.01489599828062 1 E 119.4469825293523 291.0215824467589 10 10
+6 128
+"RECTANGLE131"
+""
+1 20 140 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N {255,255,255} E E
+ E E
+127 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E 0 2 3 2 1 E 8.316666666666666 0 4.500000000000004 -156.7170745920747 -275.0000000000008 0 E 20 140 80 170
+7 129
+"ELLIPSE5"
+""
+1 119 291 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "_3DFace" E E
+ E E
+128 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+"main()
+{
+  dyn_string colores = makeDynString(\"LIB_IRC_ROJO_07\",
+                                     \"LIB_IRC_GRIS_03\");
+
+  dpConnectUserData(\"cambiarRellenoCirculo\", colores, accionamiento_motor_s_var.get_alarma_cm_f1());//Cambia el color de fondo según el estado de la alarma
+}
+" 0
+ E 0 2 3 2 1 E 1 0 1 -46.93473892470033 103.0148959982806 1 E 119.4469825293523 291.0215824467589 10 10
+7 130
+"ELLIPSE6"
+""
+1 119 291 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "_3DFace" E E
+ E E
+129 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+"main()
+{
+  dyn_string colores = makeDynString(\"LIB_IRC_ROJO_07\",
+                                     \"LIB_IRC_GRIS_03\");
+
+  dpConnectUserData(\"cambiarRellenoCirculo\", colores, accionamiento_motor_s_var.get_alarma_cp_f1());//Cambia el color de fondo según el estado de la alarma
+}
+" 0
+ E 0 2 3 2 1 E 1 0 1 -46.93473892470033 127.978417553241 1 E 119.4469825293523 291.0215824467589 10 10
+7 131
+"ELLIPSE9"
+""
+1 119 291 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "_3DFace" E E
+ E E
+130 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+"main()
+{
+  dyn_string colores = makeDynString(\"LIB_IRC_ROJO_07\",
+                                     \"LIB_IRC_GRIS_03\");
+
+  dpConnectUserData(\"cambiarRellenoCirculo\", colores, accionamiento_motor_s_var.get_alarma_ext());//Cambia el color de fondo según el estado de la alarma
+}
+" 0
+ E 0 2 3 2 1 E 1 0 1 -46.93473892470033 152.6332682897951 1 E 119.4469825293523 291.0215824467589 10 10
+7 132
+"ELLIPSE10"
+""
+1 119 291 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "_3DFace" E E
+ E E
+131 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+"main()
+{
+  dyn_string colores = makeDynString(\"LIB_IRC_ROJO_07\",
+                                     \"LIB_IRC_GRIS_03\");
+
+  dpConnectUserData(\"cambiarRellenoCirculo\", colores, comunicacion_vf.get_fallo_com());//Cambia el color de fondo según el estado de la alarma
+}
+" 0
+ E 0 2 3 2 1 E 1 0 1 -46.93473892470033 178.1515075123149 1 E 119.4469825293523 291.0215824467589 10 10
+13 134
+"PUSH_BUTTON1"
+"PEQUENIO_BLANCO"
+1 36.28069690327007 160.1818181818182 E E E 1 E 1 E N "_ButtonText" E N "_Button" E E
+ E E
+133 0 0 0 0 0
+E E E
+8
+2
+LANG:10001 0 
+LANG:10010 0 
+
+1
+"layoutAlignment" "AlignNone"
+2
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  18.3123425713618 147.6178731022582 129.1774831002863 190.5652415233108
+
+P 
+4294967295
+"pictures/iconos/faceplates/fp_config_transporte/configTrans.svg"
+2
+LANG:10001 0 
+LANG:10010 0 
+"main(mapping event)
+{
+  string inst;
+  ChildPanelOnCentralModal(\"vision/faceplates/701_LIB_TRANSPORTADOR/701_LIB_TRANSPORTADOR_PRINCIPAL.pnl\", \"701_LIB_TRANSPORTADOR\", makeDynString(\"$INST:\" + $INST + \"_TRP\"));
+}" 0
+ E E "main()
+{
+  if (dpExists($INST + \"_TRP\"))
+  {
+    this.visible = TRUE;
+  }
+  else
+  {
+    this.visible = FALSE;
+  }
+
+}" 0
+
+0
+LAYER, 1 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 2 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 3 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 4 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 5 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 6 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 7 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+0
