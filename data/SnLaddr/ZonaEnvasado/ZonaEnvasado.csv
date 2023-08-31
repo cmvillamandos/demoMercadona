@@ -1,0 +1,13 @@
+node,displayName/en_US.utf8,displayName/es_ES.utf8,target,targetAlarmId,parent
+Motor1,Motor1,Motor1,Envasadora_1,,
+Motor1_Modo,Motor1_modo,Motor1_modo,Envasadora_1.Xi_MODO,,Motor1
+Motor1_Marcha,Motor1_Marcha,Motor1_Marcha,Envasadora_1.XYd_M_OM_F1,,Motor1
+Motor2,Motor2,Motor2,Envasadora_2,,
+Motor2_Estado,Motor2_Estado,Motor2_Estado,Envasadora_2.Xi_MODO,,Motor2
+Motor2_Marcha,Motor2_Marcha,Motor2_Marcha,Envasadora_2.XYd_M_OM_F1,,Motor2
+Valvula1,Valvula1,Valvula1,ValvulaEnvases1,,
+Valvula1_Modo,Valvula1_Modo,Valvula1_Modo,ValvulaEnvases1.Xi_MODO,,Valvula1
+Valvula1_Marcha,Valvula1_Marcha,Valvula1_Marcha,ValvulaEnvases1.XYd_M_OM_F1,,Valvula1
+Valvula2,Valvula2,Valvula2,ValvulaEnvases2,,
+Valvula2_Modo,Valvula2_Modo,Valvula2_Modo,ValvulaEnvases2.Xi_MODO,,Valvula2
+Valvula2_Marcha,Valvula2_Marcha,Valvula2_Marcha,ValvulaEnvases2.XYd_M_OM_F1,,Valvula2
