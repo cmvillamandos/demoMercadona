@@ -1,0 +1,316 @@
+V 14
+2
+LANG:10001 0 
+LANG:10010 0 
+PANEL,-1 -1 867 533 N "_3DFace" 0
+"main()
+{
+  shape s = cnsTree_getTreeShape(\"_CNS_EDITOR\");
+  dyn_string ds;
+  int iCounter;
+
+  while ( dynlen(ds) == 0 && iCounter <= 10 ) // wait max 1 sec maybe tree is not registered now
+  {
+    delay(0,100);
+    ds = s.children(\"\");
+    iCounter++;
+  }
+
+  s.setSelectedItem(ds[1]);
+}" 0
+ E E E E 1 -1 -1 0  1.500000000000114 1
+""0  1
+E E 4
+"CBRef" "1"
+"EClose" E
+"dpi" "96"
+"pdpi" "92.6073"
+0 0 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+2
+LANG:10001 0 
+LANG:10010 0 
+29 8
+"cuerpo"
+""
+1 318 59 E E E 1 E 1 E N "_3DText" E N "_3DFace" E E
+ E E
+0 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+9
+"newPanelAnimDuration" "int 0"
+"oldPanelAnimDuration" "int 0"
+"newPanelAnimateOpacity" "bool TRUE"
+"oldPanelAnimateOpacity" "bool TRUE"
+"newPanelAnimateSize" "bool TRUE"
+"oldPanelAnimateSize" "bool TRUE"
+"newPanelAnimType" "string Left"
+"oldPanelAnimType" "string Right"
+"layoutAlignment" "AlignNone"
+2
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  318 59 860 520
+15 Canvas.Canvas.1
+0
+"main()
+{
+  this.ModuleName=\"cuerpo\";
+}" 0
+22 15
+"COMBO_BOX1"
+""
+1 78 19 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+2 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+1
+"layoutAlignment" "AlignNone"
+2
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  76 17 320 41
+4
+2
+LANG:10001 1 -
+LANG:10010 3 ???
+
+0
+2
+LANG:10001 10 Zona Frios
+LANG:10010 3 ???
+
+0
+2
+LANG:10001 10 Zona Secos
+LANG:10010 3 ???
+
+0
+2
+LANG:10001 7 Envases
+LANG:10010 3 ???
+
+0
+
+E
+E
+E
+ 0 0
+22 16
+"COMBO_BOX2"
+""
+1 498.2499999999998 19 E E E 0 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+3 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+1
+"layoutAlignment" "AlignNone"
+2
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  496.2499999999998 17 740.2499999999998 41
+1
+2
+LANG:10001 1 -
+LANG:10010 3 ???
+
+0
+
+E
+E
+E
+ 1 0
+2 17
+"txf_pantalla_actual"
+""
+1 178 46 E E E 1 E 1 E N "White" E N "White" E E
+ E E
+4 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 15 Pantalla Actual
+
+4
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+"transformable" "0"
+"main()
+{
+  int n_ui = myUiNumber();
+  dpConnect(\"pantalla_actual\",\"ui_\" + n_ui + \"_pantalla_1.pantalla_actual\");
+}
+void pantalla_actual(string dp, string pantalla){
+  this.text(pantalla);
+}" 0
+ E 0 1 3 2 1 E 0.2902675781249997 0 0.606060606060606 -21.66762890624994 -8.878787878787872 0 E 178 46 338 79
+0 2 2 "0s" 0 0 0 73 0 0  178 46 1
+2
+LANG:10001 34 Tahoma,-1,15,5,50,0,0,0,0,0,Normal
+LANG:10010 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+0 2
+LANG:10001 5 Zona:
+LANG:10010 3 ---
+2 18
+"PRIMITIVE_TEXT2"
+""
+1 178 46 E E E 1 E 1 E N "White" E N "White" E E
+ E E
+5 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 15 Pantalla Actual
+
+4
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+"transformable" "0"
+"main()
+{
+  int n_ui = myUiNumber();
+  dpConnect(\"pantalla_actual\",\"ui_\" + n_ui + \"_pantalla_1.pantalla_actual\");
+}
+void pantalla_actual(string dp, string pantalla){
+  this.text(pantalla);
+}" 0
+ E 0 1 3 2 1 E 0.6249999999999994 0 0.606060606060606 285.75 -8.878787878787868 0 E 178 46 338 79
+0 2 2 "0s" 0 0 0 73 0 0  178 46 1
+2
+LANG:10001 34 Tahoma,-1,15,5,50,0,0,0,0,0,Normal
+LANG:10010 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+0 2
+LANG:10001 14 Accionamiento:
+LANG:10010 3 ---
+6 14
+"RECTANGLE1"
+""
+1 0 0 E E E 1 E 1 E N {0,0,0} E N "LIB_IRC_AZUL_01" E E
+ E E
+1 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E 0 1 3 2 1 E 1.317073170731707 0 0.6 -19 -1 1 E 0 0 820 100
+29 37
+"TREE1"
+""
+1 -2 59 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+12 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+1
+"layoutAlignment" "AlignNone"
+2
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  -2 59 318 530
+10 TreeWidget
+1
+0 "rightClicked" "(string id, int column)"
+"  string dp,tipoInst;
+  dp=\"System1.\"+TREE1.parent(id)+\":\"+TREE1.getText(id,column);
+  DebugN(dp);
+  if(dp.contains(\"motor\")){
+    tipoInst=\"531_LIB_ACCIONAMIENTO_MOTOR_S\";
+  }
+  RootPanelOnModule(\"vision/faceplates/531_LIB_ACCIONAMIENTO_MOTOR_S/531_LIB_ACCIONAMIENTO_MOTOR_S.pnl\",id,\"cuerpo\",
+                    makeDynString(\"$INST:\" + dp,
+                      \"$TIPO_INST:\" + tipoInst,
+                      \"$AUTO_MODIF:FALSE\",
+                      \"$ELEM:FALSE\",
+                      \"$INHA:FALSE\",
+                      \"$ESQ_ELEC:FALSE\",
+                      \"$TAG:\"+id));"
+"main()
+{
+    //Add three columns
+  TREE1.addColumn(\"Zonas\");
+  this.appendItem(\"\",\"Zonafrios\",\"Zonafrios\");
+  this.appendItem(\"Zonafrios\",\"Motor1\",\"Motor1\");
+  this.appendItem(\"Zonafrios\",\"Motor2\",\"Motor2\");
+  this.appendItem(\"Zonafrios\",\"Valvula1\",\"Valvula1\");
+  this.appendItem(\"Zonafrios\",\"Valvula2\",\"Valvula2\");
+
+  this.appendItem(\"\",\"ZonaEnvasado\",\"ZonaEnvasado\");
+  this.appendItem(\"ZonaEnvasado\",\"Motor1Envasado\",\"Motor1\");
+  this.appendItem(\"ZonaEnvasado\",\"Motor2Envasado\",\"Motor2\");
+  this.appendItem(\"ZonaEnvasado\",\"Valvula1Envasado\",\"Valvula1\");
+  this.appendItem(\"ZonaEnvasado\",\"Valvula2Envasado\",\"Valvula2\");
+
+  this.appendItem(\"\",\"zonaSecos\",\"zonaSecos\");
+  this.appendItem(\"zonaSecos\",\"Motor1Secos\",\"Motor1\");
+  this.appendItem(\"zonaSecos\",\"Motor2Secos\",\"Motor2\");
+  this.appendItem(\"zonaSecos\",\"Valvula1Secos\",\"Valvula1\");
+  this.appendItem(\"zonaSecos\",\"Valvula2Secos\",\"Valvula2\");
+}" 0
+0
+LAYER, 1 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 2 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 3 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 4 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 5 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 6 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 7 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+0
