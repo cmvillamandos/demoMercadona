@@ -1,0 +1,321 @@
+V 14
+6
+LANG:10001 0 
+LANG:10010 20 BOTONERA_VALVULA_SIN
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+PANEL,-1 -1 520 48 N "_Transparent" 5
+"$AUTO_MODIF"
+"$ELEM"
+"$INHA"
+"$INST"
+"$TAG"
+E E E E E 1 -1 -1 0  65 2
+""0  1
+E E 5
+"CBRef" "1"
+"EClose" E
+"type" "BG_ACCIONAMIENTO_VALVULA"
+"dpi" "96"
+"pdpi" "131.45"
+0 0 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+2
+LANG:10001 0 
+LANG:10010 0 
+13 1
+"btn_principal"
+""
+1 -82 0 E E E 1 E 1 E N "LIB_IRC_BLANCO" E N "LIB_IRC_AZUL_01" E E
+ E E
+0 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 9 Principal
+LANG:10010 9 Principal
+LANG:10011 9 Principal
+LANG:10009 9 Principal
+LANG:10008 9 Principal
+LANG:10018 9 Principal
+LANG:10005 0 
+
+5
+"hoverbclr" "N \"AZUL_01\""
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+"isDefault" ""
+7
+LANG:10001 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10010 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10011 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10009 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10008 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10018 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  -2 0 261 48
+
+P 
+4294967295
+"pictures/iconos/faceplates/fp_principal/home_on.svg"
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+"main(mapping event)
+{
+  string descripcion;
+
+  descripcion = getCatStr(\"dps\", $INST);//Traduce el nombre de la instancia mediante el catálogo \"dps\"
+
+  cambiarPanelActivo(0, $INST, $AUTO_MODIF, $ELEM, $INHA, \"FP\" + $INST, $TAG);
+  setWindowTitle(myModuleName(), myPanelName(), \"PRINCIPAL - \" + descripcion);//Setea el nombre en la cabecera del módulo
+  cambiar_fondo_btns_objeto(this.name, nom_btn_panel_fp); //\"nom_btn_panel_fp\" es una variable global (array) con todos los botones (Ver Initialize del Panel)
+}
+" 0
+ E E "main()
+{
+    this.backCol(\"LIB_DEUSER_AZUL_06\"); // Cambiamos el color a la pestaña Principal.
+}" 0
+
+13 2
+"btn_config"
+""
+1 228.8651685393258 3 E E E 1 E 1 E N "LIB_IRC_BLANCO" E N "LIB_IRC_AZUL_01" E E
+ E E
+1 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 14 Configuración
+LANG:10010 14 Configuración
+LANG:10011 14 Configuración
+LANG:10009 14 Configuración
+LANG:10008 14 Configuración
+LANG:10018 14 Configuración
+LANG:10005 0 
+
+4
+"hoverbclr" "N \"AZUL_01\""
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10010 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10011 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10009 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10008 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10018 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  259 0 521 48
+
+P 
+4294967295
+"pictures/iconos/faceplates/fp_config/config_on.svg"
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+"main(mapping event)
+{
+  string descripcion;
+  int n_permiso = 11;
+  bool permiso = permisos_usuario_operacion(n_permiso, FALSE);
+
+  if (permiso)
+  {
+    descripcion = getCatStr(\"dps\", $INST);//Traduce el nombre de la instancia mediante el catálogo \"dps\"
+
+    cambiarPanelActivo(1, $INST, $AUTO_MODIF, $ELEM, $INHA, \"FP\" + $INST, $TAG);
+    setWindowTitle(myModuleName(), myPanelName(), \"CONFIGURACIÓN - \" + descripcion);//Setea el nombre en la cabecera del módulo
+    cambiar_fondo_btns_objeto(this.name, nom_btn_panel_fp); //\"nom_btn_panel_fp\" es una variable global (array) con todos los botones (Ver Initialize del Panel)
+  }
+}
+" 0
+ E E E
+0
+LAYER, 1 
+2
+LANG:10001 0 
+LANG:10010 0 
+13 4
+"PUSH_BUTTON2"
+""
+1 -181.75 110 E E E 1 E 1 E N "_ButtonText" E N {190,210,255} E E
+ E E
+3 0 0 0 0 0
+E E "main(bool enter)
+{
+  botonera_sec.visible = FALSE;
+  botonera_ext.visible = FALSE;
+}" 0
+
+1
+2
+LANG:10001 0 
+LANG:10010 0 
+
+2
+"transparentForMouse" ""
+"layoutAlignment" "AlignNone"
+2
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  -2.007914698159112 44 520.9920853018409 49
+
+T 
+2
+LANG:10001 12 PUSH_BUTTON3
+LANG:10010 0 
+E E E E
+13 5
+"PUSH_BUTTON3"
+""
+1 -181.2420853018409 63.75 E E E 1 E 1 E N "_ButtonText" E N {190,210,255} E E
+ E E
+4 0 0 0 0 0
+E E "main(bool enter)
+{
+  botonera_sec.visible = FALSE;
+  botonera_ext.visible = FALSE;
+}" 0
+
+1
+2
+LANG:10001 0 
+LANG:10010 0 
+
+2
+"transparentForMouse" ""
+"layoutAlignment" "AlignNone"
+2
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  -1.5 -2.25 521.5 2.75
+
+T 
+2
+LANG:10001 12 PUSH_BUTTON3
+LANG:10010 0 
+E E E E
+13 6
+"PUSH_BUTTON1"
+""
+1 151.2500000000001 70 E E E 1 E 1 E N "_ButtonText" E N {190,210,255} E E
+ E E
+5 0 0 0 0 0
+E E "main(bool enter)
+{
+  botonera_sec.visible = FALSE;
+  botonera_ext.visible = FALSE;
+}" 0
+
+1
+2
+LANG:10001 0 
+LANG:10010 0 
+
+2
+"transparentForMouse" ""
+"layoutAlignment" "AlignNone"
+2
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  257.9920853018409 2 261.9920853018409 46
+
+T 
+2
+LANG:10001 12 PUSH_BUTTON3
+LANG:10010 0 
+E E E E
+13 7
+"PUSH_BUTTON5"
+""
+1 -181.75 64 E E E 1 E 1 E N "_ButtonText" E N {190,210,255} E E
+ E E
+6 0 0 0 0 0
+E E "main(bool enter)
+{
+  botonera_sec.visible = FALSE;
+  botonera_ext.visible = FALSE;
+}" 0
+
+1
+2
+LANG:10001 0 
+LANG:10010 0 
+
+2
+"transparentForMouse" ""
+"layoutAlignment" "AlignNone"
+2
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  -2.007914698159112 -2 520.9920853018409 3
+
+T 
+2
+LANG:10001 12 PUSH_BUTTON3
+LANG:10010 0 
+E E E E
+6 8
+"RECTANGLE1"
+""
+1 10 10 E E E 1 E 1 E N "_Transparent" E N "LIB_IRC_AZUL_01" E E
+ E E
+7 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E 0 1 3 2 1 E 13 0 2.35 -129.75 -23.5 1 E 10 10 50 30
+0
+LAYER, 2 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 3 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 4 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 5 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 6 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 7 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+0

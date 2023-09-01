@@ -2,7 +2,7 @@ V 14
 2
 LANG:10001 0 
 LANG:10010 0 
-PANEL,-1 -1 867 533 N "_3DFace" 0
+PANEL,-1 -1 855 533 N "_3DFace" 0
 "main()
 {
   shape s = cnsTree_getTreeShape(\"_CNS_EDITOR\");
@@ -65,7 +65,7 @@ LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
   this.ModuleName=\"cuerpo\";
 }" 0
 22 15
-"COMBO_BOX1"
+"zonas"
 ""
 1 78 19 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
  E E
@@ -89,27 +89,41 @@ LANG:10010 3 ???
 
 0
 2
-LANG:10001 10 Zona Frios
+LANG:10001 9 Zonafrios
 LANG:10010 3 ???
 
 0
 2
-LANG:10001 10 Zona Secos
+LANG:10001 12 ZonaEnvasado
 LANG:10010 3 ???
 
 0
 2
-LANG:10001 7 Envases
+LANG:10001 9 zonaSecos
 LANG:10010 3 ???
 
 0
 
 E
-E
+"main()
+{
+  accionamientos.deleteAllItems();
+  accionamientos.appendItem(\"-\");
+  if(this.text()!=\"-\"){
+    accionamientos.appendItem(\"Motor1\");
+    accionamientos.appendItem(\"Motor2\");
+    accionamientos.appendItem(\"Valvula1\");
+    accionamientos.appendItem(\"Valvula1\");
+    accionamientos.enabled(true);
+  }else{
+    accionamientos.enabled(false);
+  }
+}" 0
+
 E
  0 0
 22 16
-"COMBO_BOX2"
+"accionamientos"
 ""
 1 498.2499999999998 19 E E E 0 E 1 E N "_WindowText" E N "_Window" E E
  E E
@@ -134,9 +148,32 @@ LANG:10010 3 ???
 0
 
 E
+"main()
+{
+  string dp,tipoInst,ruta;
+  dp=\"System1.\"+zonas.text()+\":\"+this.text();
+  DebugN(dp);
+  if(dp.contains(\"Motor\")){
+    tipoInst=\"531_LIB_ACCIONAMIENTO_MOTOR_S\";
+    ruta=\"vision/faceplates/531_LIB_ACCIONAMIENTO_MOTOR_S/531_LIB_ACCIONAMIENTO_MOTOR_S.pnl\";
+  }else if(dp.contains(\"Valvula\")){
+    tipoInst=\"531_LIB_ACCIONAMIENTO_VALVULA\";
+    ruta=\"vision/faceplates/531_LIB_ACCIONAMIENTO_VALVULA/531_LIB_ACCIONAMIENTO_VALVULA.pnl\";
+  }
+
+  RootPanelOnModule(ruta,this.text(),\"cuerpo\",
+                    makeDynString(\"$INST:\" + dp,
+                      \"$TIPO_INST:\" + tipoInst,
+                      \"$AUTO_MODIF:FALSE\",
+                      \"$ELEM:FALSE\",
+                      \"$INHA:FALSE\",
+                      \"$ESQ_ELEC:FALSE\",
+                      \"$TAG:\"+this.text(),
+                      \"$NOMBRE:\"+this.text()));
+}" 0
+
 E
-E
- 1 0
+ 0 0
 2 17
 "txf_pantalla_actual"
 ""
@@ -241,20 +278,25 @@ LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
 10 TreeWidget
 1
 0 "rightClicked" "(string id, int column)"
-"  string dp,tipoInst;
+"  string dp,tipoInst,ruta;
   dp=\"System1.\"+TREE1.parent(id)+\":\"+TREE1.getText(id,column);
   DebugN(dp);
   if(dp.contains(\"motor\")){
     tipoInst=\"531_LIB_ACCIONAMIENTO_MOTOR_S\";
+    ruta=\"vision/faceplates/531_LIB_ACCIONAMIENTO_MOTOR_S/531_LIB_ACCIONAMIENTO_MOTOR_S.pnl\";
+  }else if(dp.contains(\"valvula\")){
+    tipoInst=\"531_LIB_ACCIONAMIENTO_VALVULA\";
+    ruta=\"vision/faceplates/531_LIB_ACCIONAMIENTO_VALVULA/531_LIB_ACCIONAMIENTO_VALVULA.pnl.pnl\";
   }
-  RootPanelOnModule(\"vision/faceplates/531_LIB_ACCIONAMIENTO_MOTOR_S/531_LIB_ACCIONAMIENTO_MOTOR_S.pnl\",id,\"cuerpo\",
+  RootPanelOnModule(ruta,id,\"cuerpo\",
                     makeDynString(\"$INST:\" + dp,
                       \"$TIPO_INST:\" + tipoInst,
                       \"$AUTO_MODIF:FALSE\",
                       \"$ELEM:FALSE\",
                       \"$INHA:FALSE\",
                       \"$ESQ_ELEC:FALSE\",
-                      \"$TAG:\"+id));"
+                      \"$TAG:\"+id,
+                      \"$NOMBRE:\"+id));"
 "main()
 {
     //Add three columns
