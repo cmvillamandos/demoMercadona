@@ -30,14 +30,14 @@ PANEL,-1 -1 520 478 N "LIB_IRC_BLANCO" 6
        nom_btn_panel_fp = makeDynString(\"btn_principal\", \"btn_config\");  //Agregamos al Array todos los botones a los cuales les cambiaremos su aspecto al ser pulsado uno de ellos
    }
 
-  activarAddressFP($INST);//Función para establecer como activa los address de una instancia
+//   activarAddressFP($INST);//Función para establecer como activa los address de una instancia
   setWindowTitle(myModuleName(), myPanelName(), \"PRINCIPAL - \" + descripcion);//Setea el nombre en la cabecera del módulo
   windowStyle(myModuleName(), myPanelName(), 0, 0);
 }
 " 0
  "main()
 {
-  desactivarAddressFP($INST); //Función para establecer como desactiva los address de una instancia
+//   desactivarAddressFP($INST); //Función para establecer como desactiva los address de una instancia
 }
 " 0
  E E E 1 -1 -1 0  0 -0.3846153846153868
@@ -95,7 +95,9 @@ LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
 0  0 48 519 477
 15 Canvas.Canvas.1
 0
-"main()
+"#uses \"deuser/faceplates/funciones_faceplate\"
+
+main()
 {
   this.ModuleName = \"FP\" + $INST;
   cambiarPanelActivo(0, $INST, $AUTO_MODIF, $ELEM, $INHA, \"FP\" + $INST, $TAG);

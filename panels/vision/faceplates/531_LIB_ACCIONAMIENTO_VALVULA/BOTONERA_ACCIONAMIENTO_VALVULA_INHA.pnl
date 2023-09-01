@@ -8,12 +8,16 @@ LANG:10008 0
 LANG:10018 0 
 PANEL,-1 -1 360 70 N "_Transparent" 1
 "$INST"
-E E E E E 1 -1 -1 0  5.790401761217595 3.5
+"main()
+{
+  accionamientoValvula =  ObjectFactory::getDpInstancePointer($INST);
+}" 0
+ E E E E 1 -1 -1 0  5.790401761217595 3.5
 ""0  1
 E "//--------------------------------------------------------------------------------
 //Clases importadas a utilizar por las funciones de la librería
 lib_accionamiento_valvula accionamiento_valvula = lib_accionamiento_valvula($INST);
-" 0
+shared_ptr<valvula> accionamientoValvula;" 0
  4
 "CBRef" "1"
 "EClose" E
@@ -80,7 +84,7 @@ LANG:10018 0
   else if(val_ini == 12)  valor_ini = \"Manual Mantenimiento\";
   else if(val_ini == 255)  valor_ini = \"Inhabilitado\";
 
-  accionamiento_valvula.set_manual_remoto();  //Mediante la instacia de librería, cambiamos modo a manual (seteamos \"Input.Xi_MODO\" a 10)
+    accionamientoValvula.modoManual();  //Mediante la instacia de librería, cambiamos modo a manual (seteamos \".Xi_MODO\" a 10)
 
   valor_fin = \"Manual\";
 
@@ -184,7 +188,7 @@ LANG:10018 0
   else if(val_ini == 11)  valor_ini = \"Manual Local\";
   else if(val_ini == 255)  valor_ini = \"Inhabilitado\";
 
-  accionamiento_valvula.set_manual_mantenimiento();  //Mediante la instacia de librería, cambiamos modo a manual_mantenimiento (Seteamos \"Input.Xi_MODO\" a 12)
+    accionamientoValvula.modoManualMantenimiento();  //Mediante la instacia de librería, cambiamos modo a manual_mantenimiento (Seteamos \".Xi_MODO\" a 12)
 
   valor_fin = \"Manual Mantenimiento\";
 
@@ -290,7 +294,7 @@ LANG:10018 0
   else if(val_ini == 12)  valor_ini = \"Manual Mantenimiento\";
   else if(val_ini == 255)  valor_ini = \"Inhabilitado\";
 
-  accionamiento_valvula.set_manual_local();  //Mediante la instacia de librería,cambiamos modo a manual_local (Seteamos \"Input.Xi_MODO\" a 11)
+    accionamientoValvula.modoManualLocal();  //Mediante la instacia de librería,cambiamos modo a manual_local (Seteamos \".Xi_MODO\" a 11)
 
   valor_fin = \"Manual Local\";
 
@@ -396,7 +400,7 @@ LANG:10018 0
   else if(val_ini == 11)  valor_ini = \"Manual Local\";
   else if(val_ini == 12)  valor_ini = \"Manual Mantenimiento\";
 
-  accionamiento_valvula.set_inhabilitado();  //Mediante la instacia de librería,cambiamos modo a inhabilitado (seteamos \"Input.Xi_MODO\" a 255)
+  accionamientoValvula.modoInhabilitado();  //Mediante la instacia de librería,cambiamos modo a inhabilitado (seteamos \"Input.Xi_MODO\" a 255)
 
   valor_fin = \"Inhabilitado\";
 
@@ -503,7 +507,7 @@ LANG:10018 0
   else if(val_ini == 12)  valor_ini = \"Manual Mantenimiento\";
   else if(val_ini == 255)  valor_ini = \"Inhabilitado\";
 
-  accionamiento_valvula.set_automatico();  //Mediante la instacia de librería, cambiamos modo a automático (seteamos \"Input.Xi_MODO\" a 0)
+  accionamientoValvula.modoAuto();  //Mediante la instacia de librería, cambiamos modo a automático (seteamos \".Xi_MODO\" a 0)
 
   valor_fin = \"Automático\";
 

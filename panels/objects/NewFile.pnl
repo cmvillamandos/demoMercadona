@@ -256,7 +256,7 @@ LANG:10010 0
 "layoutAlignment" "AlignNone"
 "dashclr"N "_Transparent"
 "antiAliased" "0"
-E E 0 1 3 2 1 E 1.317073170731707 0 0.6 -19 -1 1 E 0 0 820 100
+E E 0 1 3 2 1 E 1.066086054015024 0 0.6 -19 -1 1 E 0 0 820 100
 29 37
 "TREE1"
 ""
@@ -281,13 +281,14 @@ LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
 "  string dp,tipoInst,ruta;
   dp=\"System1.\"+TREE1.parent(id)+\":\"+TREE1.getText(id,column);
   DebugN(dp);
-  if(dp.contains(\"motor\")){
+  if(dp.contains(\"Motor\")){
     tipoInst=\"531_LIB_ACCIONAMIENTO_MOTOR_S\";
     ruta=\"vision/faceplates/531_LIB_ACCIONAMIENTO_MOTOR_S/531_LIB_ACCIONAMIENTO_MOTOR_S.pnl\";
-  }else if(dp.contains(\"valvula\")){
+  }else if(dp.contains(\"Valvula\")){
     tipoInst=\"531_LIB_ACCIONAMIENTO_VALVULA\";
-    ruta=\"vision/faceplates/531_LIB_ACCIONAMIENTO_VALVULA/531_LIB_ACCIONAMIENTO_VALVULA.pnl.pnl\";
+    ruta=\"vision/faceplates/531_LIB_ACCIONAMIENTO_VALVULA/531_LIB_ACCIONAMIENTO_VALVULA.pnl\";
   }
+  DebugN(ruta);
   RootPanelOnModule(ruta,id,\"cuerpo\",
                     makeDynString(\"$INST:\" + dp,
                       \"$TIPO_INST:\" + tipoInst,
@@ -296,7 +297,7 @@ LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
                       \"$INHA:FALSE\",
                       \"$ESQ_ELEC:FALSE\",
                       \"$TAG:\"+id,
-                      \"$NOMBRE:\"+id));"
+                      \"$NOMBRE:\"+dp));"
 "main()
 {
     //Add three columns

@@ -11,11 +11,16 @@ PANEL,-1 -1 520 430 N "LIB_IRC_BLANCO" 4
 "$INHA"
 "$INST"
 "$TAG"
-E E E E E 1 -1 -1 0  0 0
+"main()
+{
+  accionamientoValvula =  ObjectFactory::getDpInstancePointer($INST);
+}" 0
+ E E E E 1 -1 -1 0  0 0
 ""0  1
 E "//--------------------------------------------------------------------------------
 //Clases importadas a utilizar por las funciones de la librería
 lib_accionamiento_valvula accionamiento_valvula = lib_accionamiento_valvula($INST);
+shared_ptr<valvula> accionamientoValvula;
 string tipoInst = dpTypeName($INST);
 " 0
  5
@@ -91,8 +96,7 @@ LANG:10018 0
 
   if (permiso)
   {
-
-    accionamiento_valvula.apertura_manual(); //Mediante la instacia de librería, arrancamos motor de forma manual (VALVULAS SIMPLES) (Seteamos \"InOut.Xd_M_OM_F1\" a 1 y \"InOut.Xd_M_OM_F2\" a 0)
+    accionamientoValvula.aperturaManual(); //Mediante la instacia de librería, para el motor de forma manual (VALVULAS SIMPLES) (Seteamos \"InOut.Xd_M_OM_AB\" a 1 y \"InOut.Xd_M_OM_CE\" a 0)
 
     valor_ini = \"-\";
     valor_fin = \"Paro Arranque Manual\";
@@ -216,7 +220,7 @@ LANG:10018 0
   string descripcion, motivo, valor_ini, valor_fin;
 
 
-  accionamiento_valvula.cierre_manual(); //Mediante la instacia de librería, para el motor de forma manual (VALVULAS SIMPLES) (Seteamos \"InOut.Xd_M_OM_AB\" a 0 y \"InOut.Xd_M_OM_CE\" a 1)
+  accionamientoValvula.cierreManual(); //Mediante la instacia de librería, para el motor de forma manual (VALVULAS SIMPLES) (Seteamos \"InOut.Xd_M_OM_AB\" a 0 y \"InOut.Xd_M_OM_CE\" a 1)
 
   valor_ini = \"-\";
   valor_fin = \"Paro Arranque Manual\";

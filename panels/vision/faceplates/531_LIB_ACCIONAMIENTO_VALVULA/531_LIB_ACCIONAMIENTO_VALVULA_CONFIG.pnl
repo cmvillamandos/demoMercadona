@@ -10,7 +10,11 @@ PANEL,-1 -1 520 430 N "LIB_IRC_BLANCO" 3
 "$ELEM"
 "$INST"
 "$TAG"
-E E E E E 1 -1 -1 0  0 0
+"main()
+{
+  accionamientoValvula =  ObjectFactory::getDpInstancePointer($INST);
+}" 0
+ E E E E 1 -1 -1 0  0 0
 ""0  1
 E "//--------------------------------------------------------------------------------
 //Clases importadas a utilizar por las funciones de la librería
@@ -30,7 +34,7 @@ bool tc_seleccionado = FALSE;
 bool tc_confirmado = FALSE;
 
 string tipoInst = dpTypeName($INST);
-" 0
+shared_ptr<valvula> accionamientoValvula;" 0
  5
 "CBRef" "1"
 "EClose" E
@@ -125,7 +129,9 @@ LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
 0  249 76 422 103
 3 "6s" 6 0 0 10 0 -1  "main(mapping event)
 {
-  teclado(accionamiento_valvula.get_tiempovigilancia_cm_f1(), \"keypad\");
+  float tiempo;
+  tiempo = tecladoFaceplates($INST, \"keypad\");
+  motor.cambioTiempoVigilanciaMarcha(tiempo); //setea en DATOS_ALARMA.Xt_TiempoVigilancia_CM_F1
 }
 " 0
  "main()
@@ -174,7 +180,9 @@ LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
 0  248.8859205895485 131.3947368421053 422 158
 3 "6s" 6 0 0 10 0 -1  "main(mapping event)
 {
-  teclado(accionamiento_valvula.get_tiempovigilancia_cp_f1(), \"keypad\");
+  float tiempo;
+  tiempo = tecladoFaceplates($INST, \"keypad\");
+  accionamientoValvula.cambioTiempoVigilanciaParo(tiempo); //setea en DATOS_ALARMA.Xt_TiempoVigilancia_CP_F1
 }
 " 0
  "main()
@@ -614,7 +622,7 @@ E E
 " 0
 "main(int button, int state)
 {
-  accionamiento_valvula.set_archivado_bbdd(this.state(0));
+  accionamientoValvula.cambioAlmacenado(this.state(0)); //setea en archivado_bbdd
 }
 " 0
 29 55
