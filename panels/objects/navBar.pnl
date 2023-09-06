@@ -173,6 +173,23 @@ LANG:10010 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
 0 2
 LANG:10001 14 Accionamiento:
 LANG:10010 3 ---
+7 7
+"ELLIPSE1"
+""
+1 395 25 E E E 1 E 1 E N {0,0,0} E N {255,255,255} E E
+ E E
+6 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+E E 0 1 3 2 1 E U  1 E 395 25 25 25
 0
 LAYER, 1 
 2
