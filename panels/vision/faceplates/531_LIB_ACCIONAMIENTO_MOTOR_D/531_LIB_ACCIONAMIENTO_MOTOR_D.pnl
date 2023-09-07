@@ -1,0 +1,190 @@
+V 14
+7
+LANG:10001 0 
+LANG:10010 8 MOTOR _D
+LANG:10011 0 
+LANG:10009 7 MOTOR D
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+PANEL,-1 -1 520 494 N "LIB_IRC_BLANCO" 6
+"$AUTO_MODIF"
+"$ELEM"
+"$ESQ_ELEC"
+"$INHA"
+"$INST"
+"$TAG"
+"main()
+{
+  string descripcion;
+
+  descripcion = getCatStr(\"dps\", $INST);
+
+  addGlobal(\"nom_btn_panel_fp\", DYN_STRING_VAR);  //Creamos la variable global para utilizarla en todo el panel
+
+  if($ESQ_ELEC == TRUE || $ESQ_ELEC == \"\")  //Comprobamos si está activa la opción para mostrar el esquema eléctrico
+   {
+       nom_btn_panel_fp = makeDynString(\"btn_principal\", \"btn_config\", \"btn_funcionamiento\",\"btn_esquematica\");  //Agregamos al Array todos los botones a los cuales les cambiaremos su aspecto al ser pulsado uno de ellos
+   }
+  else
+   {
+       nom_btn_panel_fp = makeDynString(\"btn_principal\", \"btn_config\", \"btn_funcionamiento\");  //Agregamos al Array todos los botones a los cuales les cambiaremos su aspecto al ser pulsado uno de ellos
+   }
+
+
+  activarAddressFP($INST); //Función para establecer como activa los address de una instancia
+  setWindowTitle(myModuleName(), myPanelName(), \"PRINCIPAL - \" + descripcion); //Setea el nombre en la cabecera del módulo
+  windowStyle(myModuleName(), myPanelName(), 0, 0);
+}
+" 0
+ "main()
+{
+  desactivarAddressFP($INST); //Función para establecer como desactiva los address de una instancia
+}
+" 0
+ E E E 1 -1 -1 0  40 40
+""0  1
+E E 6
+"CBRef" "1"
+"EClose" E
+"windowIcon" "iconos/ventanas/seleccion.svg"
+"type" "BG_ACCIONAMIENTO_MOTOR_D"
+"dpi" "96"
+"pdpi" "96"
+0 0 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+2
+LANG:10001 0 
+LANG:10010 0 
+29 19
+"body"
+""
+1 -5.684341886080801e-14 47 E E E 1 E 1 E N "_3DText" E N "_3DFace" E E
+ E E
+18 0 0 0 0 0
+E E E
+0
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+11
+"newPanelAnimDuration" "int 0"
+"oldPanelAnimDuration" "int 0"
+"newPanelAnimateOpacity" "bool TRUE"
+"oldPanelAnimateOpacity" "bool TRUE"
+"newPanelAnimateSize" "bool TRUE"
+"oldPanelAnimateSize" "bool TRUE"
+"newPanelAnimType" "string TopLeft"
+"oldPanelAnimType" "string BottomRight"
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10010 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10011 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10009 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10008 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10018 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  2.220446049250313e-16 47 519 496
+15 Canvas.Canvas.1
+0
+"main()
+{
+  this.ModuleName = \"FP\" + $INST;
+  cambiarPanelActivo(0, $INST, $AUTO_MODIF, $ELEM, $INHA, \"FP\" + $INST, $TAG);
+}
+" 0
+29 25
+"EMBEDDED_MODULE1"
+""
+1 -90.0332633674056 6.00041228945846 E E E 1 E 1 E N "_3DText" E N "_3DFace" E E
+ E E
+24 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+10
+"newPanelAnimDuration" "int 0"
+"oldPanelAnimDuration" "int 0"
+"newPanelAnimateOpacity" "bool FALSE"
+"oldPanelAnimateOpacity" "bool FALSE"
+"newPanelAnimateSize" "bool FALSE"
+"oldPanelAnimateSize" "bool FALSE"
+"newPanelAnimType" "string None"
+"oldPanelAnimType" "string None"
+"sizePolicy" "Preferred Preferred"
+"layoutAlignment" "AlignNone"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  0 0 519 47
+15 Canvas.Canvas.1
+0
+"main()
+{
+
+  if($ESQ_ELEC == TRUE || $ESQ_ELEC == \"\")  //Comprobamos si está activa la opción para mostrar el esquema eléctrico
+    RootPanelOnModule(\"vision/faceplates/531_LIB_ACCIONAMIENTO_MOTOR_D/BOTONERA_ESQUEMA_ELECTRICO_MOTOR_D_VISIBLE.pnl\", \"BOTONERA_ESQUEMA_ELECTRICO_MOTOR_D_VISIBLE\", this.ModuleName(), makeDynString(\"$INST:\" + $INST, \"$AUTO_MODIF:\" + $AUTO_MODIF, \"$ELEM:\" + $ELEM, \"$INHA:\" + $INHA, \"$TAG:\" + $TAG));
+  else
+    RootPanelOnModule(\"vision/faceplates/531_LIB_ACCIONAMIENTO_MOTOR_D/BOTONERA_ESQUEMA_ELECTRICO_MOTOR_D_NO_VISIBLE.pnl\", \"BOTONERA_ESQUEMA_ELECTRICO_MOTOR_D_NO_VISIBLE\", this.ModuleName(), makeDynString(\"$INST:\" + $INST, \"$AUTO_MODIF:\" + $AUTO_MODIF, \"$ELEM:\" + $ELEM, \"$INHA:\" + $INHA, \"$TAG:\" + $TAG));
+
+}
+" 0
+0
+LAYER, 1 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 2 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 3 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 4 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 5 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 6 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 7 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+0

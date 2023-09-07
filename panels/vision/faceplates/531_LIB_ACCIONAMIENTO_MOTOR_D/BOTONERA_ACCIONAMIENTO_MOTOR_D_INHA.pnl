@@ -1,0 +1,592 @@
+V 14
+6
+LANG:10001 0 
+LANG:10010 15 BOTONERA_D_INHA
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+PANEL,-1 -1 360 70 N "_Transparent" 1
+"$INST"
+E E E E E 1 -1 -1 0  5.728141816857544 35.5
+""0  1
+E "//--------------------------------------------------------------------------------
+//Clases importadas a utilizar por las funciones de la librería
+lib_accionamiento_motor_d accionamiento_motor_d = lib_accionamiento_motor_d($INST);" 0
+ 4
+"CBRef" "1"
+"EClose" E
+"dpi" "96"
+"pdpi" "131.45"
+0 0 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+2
+LANG:10001 0 
+LANG:10010 0 
+13 1
+"btn_automatico"
+""
+1 9.80502461734693 2 E E E 1 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+0 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+4
+"hoverbclr" "N \"AZUL_01\""
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10010 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10011 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10009 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10008 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10018 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  6.734670075203326 2 73.73467007520333 69
+
+P 
+4294967295
+"pictures/iconos/faceplates/fp_automatico/auto_off.svg"
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+"main(mapping event)
+{
+  int val_ini, error;
+  string descripcion, motivo, valor_ini, valor_fin;
+
+  val_ini = accionamiento_motor_d.get_valor_xi_modo();
+
+  if(val_ini == 10)  valor_ini = \"Manual\";
+  else if(val_ini == 11)  valor_ini = \"Manual Local\";
+  else if(val_ini == 12)  valor_ini = \"Manual Mantenimiento\";
+  else if(val_ini == 255)  valor_ini = \"Inhabilitado\";
+
+  motor.modoAuto();  //Mediante la instacia de librería, cambiamos modo a automático (seteamos \"Input.Xi_MODO\" a 0)
+
+  valor_fin = \"Automático\";
+
+  descripcion = dpGetAlias($INST + \".\");
+  motivo = \"Cambio en el modo de funcionamiento a \" + valor_fin + \": \" + descripcion;
+
+  writeAuditEntry(accionamiento_motor_d.get_xi_modo(), valor_ini, valor_fin, error, motivo);
+}
+" 0
+ E E "main()
+{
+   //Recogemos y analizamos la hoja de estilos utilizada, para cargar las imágenes correspondientes
+   string textoEstilo = getApplicationProperty(\"styleSheet\");
+   if(textoEstilo.contains(\"blackStyle{}\"))
+   {
+     this.fill(\"[pattern,[tile,any,C:/WinCC_OA_Proj_3_18/Scada_Libreria_DEUSER_3_18/pictures/iconos/faceplates/fp_automatico/auto_blanco_off.svg]]\");
+   }
+
+  if(!dpExists(accionamiento_motor_d.get_modo())){  //Comprobamos si no existe el DP y le añadimos atributos de color al componente.'accionamiento_motor_d' es la instancia creada para leer librerías
+    setMultiValue(\"\", \"color\", \"LIB_IRC_MORADO_01\", \"\", \"foreCol\", \"LIB_IRC_MORADO_01\");
+    return;
+  }
+
+  dpConnectUserData(\"cambiar_estado_btn_fp\", this.name(), accionamiento_motor_d.get_modo());  //Devuelve \"Input.Xi_MODO\"
+}
+
+//Cambia las características del objeto (botón) dependiendo del estado
+void cambiar_estado_btn_fp(string nom_obj, string dp1, int estado){
+  shape shape_objeto;
+  string path_downpixmap, path_uppixmap;
+
+  shape_objeto = getShape(nom_obj);  //Recuperamos el shape del objeto que se va a cambiar su estado
+  path_downpixmap = shape_objeto.buttonDownPixmap();  //Recuperamos el buttonDownPixmap de relleno del objeto
+  path_uppixmap = shape_objeto.buttonUpPixmap();  //Recuperamos el buttonUpPixmap de relleno del objeto
+
+  if(path_downpixmap.isEmpty())  path_downpixmap = path_uppixmap;  //Si el path de la imagen del button DownPixmap está vacia se rellena con la del UpPixmap que debe estar rellena al colocar el button
+
+  if(estado == 0){
+    strreplace(path_downpixmap, \"_off\", \"_on\");  //Remplazamos la ruta de la imagen del button DownPixmap de OFF A ON
+    strreplace(path_uppixmap, \"_off\", \"_on\");  //Remplazamos la ruta de la imagen del button UpPixmap de OFF A ON
+  }else{
+    strreplace(path_downpixmap, \"_on\", \"_off\");  //Remplazamos la ruta de la imagen del button DownPixmap de ON A OFF
+    strreplace(path_uppixmap, \"_on\", \"_off\");  //Remplazamos la ruta de la imagen del button UpPixmap de ON A OFF
+  }
+
+  setValue(nom_obj, \"buttonType\", BT_PIXMAP,
+                    \"buttonDownPixmap\", path_downpixmap,
+                    \"buttonUpPixmap\", path_uppixmap);
+}
+" 0
+
+13 2
+"btn_manual"
+""
+1 77.63365568346603 4 E E E 1 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+1 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+4
+"hoverbclr" "N \"AZUL_01\""
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10010 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10011 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10009 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10008 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10018 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  75.63365568346603 2 143.607542650083 69
+
+P 
+4294967295
+"pictures/iconos/faceplates/fp_manual/manual_off.svg"
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+"main(mapping event)
+{
+  int val_ini, error;
+  string descripcion, motivo, valor_ini, valor_fin;
+
+  val_ini = accionamiento_motor_d.get_valor_xi_modo();
+
+  if(val_ini == 0)  valor_ini = \"Automático\";
+  else if(val_ini == 11)  valor_ini = \"Manual Local\";
+  else if(val_ini == 12)  valor_ini = \"Manual Mantenimiento\";
+  else if(val_ini == 255)  valor_ini = \"Inhabilitado\";
+
+  motor.modoManual();  //Mediante la instacia de librería, cambiamos modo a manual (seteamos \"Input.Xi_MODO\" a 10)
+
+  valor_fin = \"Manual\";
+
+  descripcion = dpGetAlias($INST + \".\");
+  motivo = \"Cambio en el modo de funcionamiento a \" + valor_fin + \": \" + descripcion;
+
+  writeAuditEntry(accionamiento_motor_d.get_xi_modo(), valor_ini, valor_fin, error, motivo);
+}
+" 0
+ E E "main()
+{
+   //Recogemos y analizamos la hoja de estilos utilizada, para cargar las imágenes correspondientes
+   string textoEstilo = getApplicationProperty(\"styleSheet\");
+   if(textoEstilo.contains(\"blackStyle{}\"))
+   {
+     this.fill(\"[pattern,[tile,any,C:/WinCC_OA_Proj_3_18/Scada_Libreria_DEUSER_3_18/pictures/iconos/faceplates/fp_manual/manual_blanco_off.svg]]\");
+   }
+
+  if(!dpExists(accionamiento_motor_d.get_modo())){  //Comprobamos si no existe el DP y le añadimos atributos de color al componente.'accionamiento_motor_d' es la instancia creada para leer librerías
+    setMultiValue(\"\", \"color\", \"LIB_IRC_MORADO_01\", \"\", \"foreCol\", \"LIB_IRC_MORADO_01\");
+    return;
+  }
+
+  dpConnectUserData(\"cambiar_estado_btn_fp\", this.name(), accionamiento_motor_d.get_modo());  //Devuelve \"Input.Xi_MODO\"
+}
+//Cambia las características del objeto (botón) dependiendo del estado
+void cambiar_estado_btn_fp(string nom_obj, string dp1, int estado){
+  shape shape_objeto;
+  string path_downpixmap, path_uppixmap;
+
+  shape_objeto = getShape(nom_obj);  //Recuperamos el shape del objeto que se va a cambiar su estado
+  path_downpixmap = shape_objeto.buttonDownPixmap();  //Recuperamos el buttonDownPixmap de relleno del objeto
+  path_uppixmap = shape_objeto.buttonUpPixmap();  //Recuperamos el buttonUpPixmap de relleno del objeto
+
+  if(path_downpixmap == \"\")  path_downpixmap = path_uppixmap;  //Si el path de la imagen del button DownPixmap está vacia se rellena con la del UpPixmap que debe estar rellena al colocar el button
+
+  if(estado==10){
+    strreplace(path_downpixmap, \"_off\", \"_on\");  //Remplazamos la ruta de la imagen del button DownPixmap de OFF A ON
+    strreplace(path_uppixmap, \"_off\", \"_on\");  //Remplazamos la ruta de la imagen del button UpPixmap de OFF A ON
+  }else{
+    strreplace(path_downpixmap, \"_on\", \"_off\");  //Remplazamos la ruta de la imagen del button DownPixmap de ON A OFF
+    strreplace(path_uppixmap, \"_on\", \"_off\");  //Remplazamos la ruta de la imagen del button UpPixmap de ON A OFF
+  }
+
+  setValue(nom_obj, \"buttonType\", BT_PIXMAP,
+                    \"buttonDownPixmap\", path_downpixmap,
+                    \"buttonUpPixmap\", path_uppixmap);
+}
+" 0
+
+13 3
+"btn_manual_mantenimiento"
+""
+1 217.892457349917 4 E E E 1 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+2 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+4
+"hoverbclr" "N \"AZUL_01\""
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10010 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10011 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10009 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10008 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10018 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  215.892457349917 2 282.892457349917 69
+
+P 
+4294967295
+"pictures/iconos/faceplates/fp_manual/manual_mantenimiento_off.svg"
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+"main(mapping event)
+{
+  int val_ini, error;
+  string descripcion, motivo, valor_ini, valor_fin;
+
+  val_ini = accionamiento_motor_d.get_valor_xi_modo();
+
+  if(val_ini == 0)  valor_ini = \"Automático\";
+  else if(val_ini == 10)  valor_ini = \"Manual\";
+  else if(val_ini == 11)  valor_ini = \"Manual Local\";
+  else if(val_ini == 255)  valor_ini = \"Inhabilitado\";
+
+  motor.modoManualMantenimiento();  //Mediante la instacia de librería, cambiamos modo a manual_mantenimiento (Seteamos \"Input.Xi_MODO\" a 12)
+
+  valor_fin = \"Manual Mantenimiento\";
+
+  descripcion = dpGetAlias($INST + \".\");
+  motivo = \"Cambio en el modo de funcionamiento a \" + valor_fin + \": \" + descripcion;
+
+  writeAuditEntry(accionamiento_motor_d.get_xi_modo(), valor_ini, valor_fin, error, motivo);
+}
+" 0
+ E E "main()
+{
+   //Recogemos y analizamos la hoja de estilos utilizada, para cargar las imágenes correspondientes
+   string textoEstilo = getApplicationProperty(\"styleSheet\");
+   if(textoEstilo.contains(\"blackStyle{}\"))
+  {
+    this.fill(\"[pattern,[tile,any,C:/WinCC_OA_Proj_3_18/Scada_Libreria_DEUSER_3_18/pictures/iconos/faceplates/fp_manual/manual_mantenimiento_blanco_off.svg]]\");
+  }
+
+  if(!dpExists(accionamiento_motor_d.get_modo())){  //Comprobamos si no existe el DP y le añadimos atributos de color al componente.'accionamiento_motor_d' es la instancia creada para leer librerías
+    setMultiValue(\"\", \"color\", \"LIB_IRC_MORADO_01\", \"\", \"foreCol\", \"LIB_IRC_MORADO_01\");
+    return;
+  }
+
+  dpConnectUserData(\"cambiar_estado_btn_fp\", this.name(), accionamiento_motor_d.get_modo());  //Input.Xi_MODO
+}
+
+void cambiar_estado_btn_fp(string nom_obj, string dp1, int estado){
+  shape shape_objeto;
+  string path_downpixmap, path_uppixmap;
+
+  shape_objeto = getShape(nom_obj);  //Recuperamos el shape del objeto que se va a cambiar su estado
+  path_downpixmap = shape_objeto.buttonDownPixmap();  //Recuperamos el buttonDownPixmap de relleno del objeto
+  path_uppixmap = shape_objeto.buttonUpPixmap();  //Recuperamos el buttonUpPixmap de relleno del objeto
+
+  if(path_downpixmap.isEmpty())  path_downpixmap = path_uppixmap;  //Si el path de la imagen del button DownPixmap está vacia se rellena con la del UpPixmap que debe estar rellena al colocar el button
+
+  if(estado == 12){
+    strreplace(path_downpixmap, \"_off\", \"_on\");  //Remplazamos la ruta de la imagen del button DownPixmap de OFF A ON
+    strreplace(path_uppixmap, \"_off\", \"_on\");  //Remplazamos la ruta de la imagen del button UpPixmap de OFF A ON
+  }else{
+    strreplace(path_downpixmap, \"_on\", \"_off\");  //Remplazamos la ruta de la imagen del button DownPixmap de ON A OFF
+    strreplace(path_uppixmap, \"_on\", \"_off\");  //Remplazamos la ruta de la imagen del button UpPixmap de ON A OFF
+  }
+
+  setValue(nom_obj, \"buttonType\", BT_PIXMAP,
+                    \"buttonDownPixmap\", path_downpixmap,
+                    \"buttonUpPixmap\", path_uppixmap);
+}
+" 0
+
+13 4
+"btn_manual_local"
+""
+1 149.0559782219194 2 E E E 1 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+3 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+4
+"hoverbclr" "N \"AZUL_01\""
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10010 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10011 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10009 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10008 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10018 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  145.9690775791687 2 213.9429645457856 69
+
+P 
+4294967295
+"pictures/iconos/faceplates/fp_manual/manual_local_off.svg"
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+"main(mapping event)
+{
+  int val_ini, error;
+  string descripcion, motivo, valor_ini, valor_fin;
+
+  val_ini = accionamiento_motor_d.get_valor_xi_modo();
+
+  if(val_ini == 0)  valor_ini = \"Automático\";
+  else if(val_ini == 10)  valor_ini = \"Manual\";
+  else if(val_ini == 12)  valor_ini = \"Manual Mantenimiento\";
+  else if(val_ini == 255)  valor_ini = \"Inhabilitado\";
+
+  motor.modoManualLocal();  //Mediante la instacia de librería,cambiamos modo a manual_local (Seteamos \"Input.Xi_MODO\" a 11)
+
+  valor_fin = \"Manual Local\";
+
+  descripcion = dpGetAlias($INST + \".\");
+  motivo = \"Cambio en el modo de funcionamiento a \" + valor_fin + \": \" + descripcion;
+
+  writeAuditEntry(accionamiento_motor_d.get_xi_modo(), valor_ini, valor_fin, error, motivo);
+}
+" 0
+ E E "main()
+{
+  //Recogemos y analizamos la hoja de estilos utilizada, para cargar las imágenes correspondientes
+   string textoEstilo = getApplicationProperty(\"styleSheet\");
+   if(textoEstilo.contains(\"blackStyle{}\"))
+   {
+     this.fill(\"[pattern,[tile,any,C:/WinCC_OA_Proj_3_18/Scada_Libreria_DEUSER_3_18/pictures/iconos/faceplates/fp_manual/manual_local_blanco_off.svg]]\");
+   }
+
+  if(!dpExists(accionamiento_motor_d.get_modo())){  //Comprobamos si no existe el DP y le añadimos atributos de color al componente.'accionamiento_motor_d' es la instancia creada para leer librerías
+    setMultiValue(\"\", \"color\", \"LIB_IRC_MORADO_01\", \"\", \"foreCol\", \"LIB_IRC_MORADO_01\");
+    return;
+  }
+
+  dpConnectUserData(\"cambiar_estado_btn_fp\", this.name(), accionamiento_motor_d.get_modo());  //Input.Xi_MODO
+}
+
+//Cambia las características del objeto (botón) dependiendo del estado
+void cambiar_estado_btn_fp(string nom_obj, string dp1, int estado){
+  shape shape_objeto;
+  string path_downpixmap, path_uppixmap;
+
+  shape_objeto = getShape(nom_obj);  //Recuperamos el shape del objeto que se va a cambiar su estado
+  path_downpixmap = shape_objeto.buttonDownPixmap();  //Recuperamos el buttonDownPixmap de relleno del objeto
+  path_uppixmap = shape_objeto.buttonUpPixmap();  //Recuperamos el buttonUpPixmap de relleno del objeto
+
+  if(path_downpixmap.isEmpty())  path_downpixmap = path_uppixmap;  //Si el path de la imagen del button DownPixmap está vacia se rellena con la del UpPixmap que debe estar rellena al colocar el button
+
+  if(estado == 11){
+    strreplace(path_downpixmap, \"_off\", \"_on\");  //Remplazamos la ruta de la imagen del button DownPixmap de OFF A ON
+    strreplace(path_uppixmap, \"_off\", \"_on\");  //Remplazamos la ruta de la imagen del button UpPixmap de OFF A ON
+  }else{
+    strreplace(path_downpixmap, \"_on\", \"_off\");  //Remplazamos la ruta de la imagen del button DownPixmap de ON A OFF
+    strreplace(path_uppixmap, \"_on\", \"_off\");  //Remplazamos la ruta de la imagen del button UpPixmap de ON A OFF
+  }
+
+  setValue(nom_obj, \"buttonType\", BT_PIXMAP,
+                    \"buttonDownPixmap\", path_downpixmap,
+                    \"buttonUpPixmap\", path_uppixmap);
+}
+" 0
+
+13 5
+"btn_inhabilitar"
+""
+1 287.7265342957805 2 E E E 1 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+4 0 0 0 0 0
+E E E
+1
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+4
+"hoverbclr" "N \"AZUL_01\""
+"layoutAlignment" "AlignNone"
+"focusPolicy" "StrongFocus"
+"showFocus" "0"
+7
+LANG:10001 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10010 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10011 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10009 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10008 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10018 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10005 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  284.6561797536369 2 351.6561797536369 69
+
+P 
+4294967295
+"pictures/iconos/faceplates/fp_inhabilitar/inh_off.svg"
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+"main(mapping event)
+{
+
+  int val_ini, error;
+  string descripcion, motivo, valor_ini, valor_fin;
+
+  val_ini = accionamiento_motor_d.get_valor_xi_modo();
+
+  if(val_ini == 0)  valor_ini = \"Automático\";
+  else if(val_ini == 10)  valor_ini = \"Manual\";
+  else if(val_ini == 11)  valor_ini = \"Manual Local\";
+  else if(val_ini == 12)  valor_ini = \"Manual Mantenimiento\";
+
+  motor.modoInhabilitado();  //Mediante la instacia de librería, cambiamos modo a inhabilitado (seteamos \"Input.Xi_MODO\" a 255)
+
+  valor_fin = \"Inhabilitado\";
+  descripcion = dpGetAlias($INST + \".\");
+  motivo = \"Cambio en el modo de funcionamiento a \" + valor_fin + \": \" + descripcion;
+
+  writeAuditEntry(accionamiento_motor_d.get_xi_modo(), valor_ini, valor_fin, error, motivo);
+}
+" 0
+ E E "main()
+{
+   //Recogemos y analizamos la hoja de estilos utilizada, para cargar las imágenes correspondientes
+   string textoEstilo = getApplicationProperty(\"styleSheet\");
+   if(textoEstilo.contains(\"blackStyle{}\"))
+   {
+     this.fill(\"[pattern,[tile,any,C:/WinCC_OA_Proj_3_18/Scada_Libreria_DEUSER_3_18/pictures/iconos/faceplates/fp_inhabilitar/inh_blanco_off.svg]]\");
+   }
+
+  if(!dpExists(accionamiento_motor_d.get_modo())){  //Comprobamos si no existe el DP y le añadimos atributos de color al componente.'accionamiento_motor_d' es la instancia creada para leer librerías
+    setMultiValue(\"\", \"color\", \"LIB_IRC_MORADO_01\", \"\", \"foreCol\", \"LIB_IRC_MORADO_01\");
+    return;
+  }
+
+  dpConnectUserData(\"cambiar_estado_btn_fp\", this.name(), accionamiento_motor_d.get_modo());  //Devuelve \"Input.Xi_MODO\"
+}
+
+//Cambia las características del objeto (botón) dependiendo del estado
+void cambiar_estado_btn_fp(string nom_obj, string dp1, int estado){
+  shape shape_objeto;
+  string path_downpixmap, path_uppixmap;
+
+  shape_objeto = getShape(nom_obj);  //Recuperamos el shape del objeto que se va a cambiar su estado
+  path_downpixmap = shape_objeto.buttonDownPixmap();  //Recuperamos el buttonDownPixmap de relleno del objeto
+  path_uppixmap = shape_objeto.buttonUpPixmap();  //Recuperamos el buttonUpPixmap de relleno del objeto
+
+  if(path_downpixmap.isEmpty())  path_downpixmap = path_uppixmap;  //Si el path de la imagen del button DownPixmap está vacia se rellena con la del UpPixmap que debe estar rellena al colocar el button
+
+  if(estado == 255){
+    strreplace(path_downpixmap, \"_off\", \"_on\");  //Remplazamos la ruta de la imagen del button DownPixmap de OFF A ON
+    strreplace(path_uppixmap, \"_off\", \"_on\");  //Remplazamos la ruta de la imagen del button UpPixmap de OFF A ON
+  }else{
+    strreplace(path_downpixmap, \"_on\", \"_off\");  //Remplazamos la ruta de la imagen del button DownPixmap de ON A OFF
+    strreplace(path_uppixmap, \"_on\", \"_off\");  //Remplazamos la ruta de la imagen del button UpPixmap de ON A OFF
+  }
+
+  setValue(nom_obj, \"buttonType\", BT_PIXMAP,
+                    \"buttonDownPixmap\", path_downpixmap,
+                    \"buttonUpPixmap\", path_uppixmap);
+}
+" 0
+
+0
+LAYER, 1 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 2 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 3 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 4 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 5 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 6 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 7 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+0
