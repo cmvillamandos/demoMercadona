@@ -128,15 +128,23 @@ class motor_simple : accionamiento
     set("Yi_Contador_Dias_Totales", Yi_Contador_Dias_Totales);
   }
 
-  public void resetTiempoTotal(){
-    setXd_RESET_TOTAL(1);
-    delay(0,500);
+  public void pulsoResetTiempoTotal()
+  {
     setXd_RESET_TOTAL(0);
   }
 
-  public void resetTiempoParcial(){
-    setXd_RESET_PARCIAL(1);
-    delay(0,500);
-    setXd_RESET_PARCIAL(0);
+  public void levantarResetTiempoTotal()
+  {
+    setXd_RESET_TOTAL(0);
+  }
+
+  public void pulsoResetTiempoParcial()
+  {
+    setXd_RESET_TOTAL(1);
+  }
+
+  public void levantarResetTiempoParcial()
+  {
+    setXd_RESET_TOTAL(0);
   }
 };

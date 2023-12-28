@@ -1,0 +1,849 @@
+V 14
+4
+LANG:10001 20 S7+ symbolic address
+LANG:10010 20 S7+ symbolic address
+LANG:10000 25 S7+ Symbolik-Adressierung
+LANG:10027 43 Символьная адресация S7+
+PANEL,-1 -1 720 450 N "_3DFace" 6
+"$DIRECT"
+"$RCVMODE"
+"$REFSTR"
+"$SERVER"
+"$STATION"
+"$TYPE"
+"main()
+{
+  txtServer.text = $SERVER;
+  g_s7drvdp = S7PLUS_INOA + $SERVER;
+  DebugN($SERVER);
+  g_requestId = myUiNumber() + \"_\" + myModuleName() + \"_\" + myPanelName();
+  g_station = $STATION;
+  g_hmiVisible = 1;
+  g_reduact = 0;
+
+  if ( isDollarDefined(\"$DIRECT\") )
+    g_direction = $DIRECT;
+  if ( isDollarDefined(\"$RCVMODE\") )
+    g_rcvMode = $RCVMODE;
+  if ( isDollarDefined(\"$REFSTR\") )
+    g_refstr = $REFSTR;
+  if ( isDollarDefined(\"$TYPE\") )
+    g_type = $TYPE;
+
+  g_alarm = ( g_rcvMode == 4 && g_direction == 1 );
+  g_tspp  = ( g_type == \"TSPP\" );
+
+  showWaitModule(1);
+
+  if ( strpos(g_station, \"|\") != -1 )
+    g_stationshort = strsplit(g_station, \"|\")[2];
+
+  //dyn_string dsTemp = strsplit(g_station, \"|\");
+  //g_stationshort = dynlen(dsTemp)>1?dsTemp[2]:\"\";
+
+  g_parentId = \"\";
+  cmdOk.enabled = FALSE;
+
+  trItems.addColumn(getCatStr(\"s7plus\", \"tiaBrowseNP\")); // 0 node paths --> station
+  trItems.addColumn(getCatStr(\"s7plus\", \"tiaBrowseST\")); // 1 system types
+  trItems.addColumn(getCatStr(\"s7plus\", \"tiaBrowseVT\")); // 2 value types
+  trItems.addColumn(getCatStr(\"s7plus\", \"tiaBrowseIL\")); // 3 item lengths
+  trItems.addColumn(getCatStr(\"s7plus\", \"tiaBrowseNC\")); // 4 node comments
+
+  bool bSplitActive1, bSplitActive2;
+
+  // TFS 12634
+  if ( isRedundant() )
+  {
+    reduActive(g_reduact);
+
+    // tfs 34387
+    bool bSplitMode1, bSplitMode2;
+
+    dpGet(S7PLUS_INTL + \"ReduManager.SplitMode\",                    bSplitMode1,
+          S7PLUS_INTL + \"ReduManager\" + S7PLUS_REDU + \".SplitMode\", bSplitMode2);
+
+    if ( bSplitMode1 || bSplitMode2 )
+    {
+      dpGet(S7PLUS_INTL + \"ReduManager.SplitActive\",                    bSplitActive1,
+            S7PLUS_INTL + \"ReduManager\" + S7PLUS_REDU + \".SplitActive\", bSplitActive2);
+    }
+  }
+
+  if ( g_reduact == 2 || bSplitActive2 )
+    g_s7drvdp += S7PLUS_REDU;
+
+  if ( g_alarm )
+    g_station += \"|Alarms\";
+
+  setMultiValue(\"cbHmiVisible\",      \"visible\", !g_alarm,
+                \"ptSymbolicAddress\", \"visible\", !g_alarm,
+                \"ptAlarmingAddress\", \"visible\", g_alarm);
+
+  trItems.hideColumn(1, g_alarm);
+  trItems.hideColumn(2, g_alarm);
+  trItems.hideColumn(3, g_alarm);
+
+  g_parentId = g_station;
+
+  trItems.clear();
+
+  //if ( !trItems.itemExists(g_station) )
+  trItems.appendItem(\"\", g_station, g_stationshort);
+
+
+
+  treeConnect(g_s7drvdp);
+
+  if ( g_alarm )
+    dpSet(g_s7drvdp + sBRO + \"GetBranch\", makeDynString(g_requestId, g_parentId, g_hmiVisible));
+
+  trItems.enabled(FALSE);
+  trItems.updatesEnabled(FALSE);
+
+  if ( g_alarm )
+    setInputFocus(myModuleName(), myPanelName(), \"trItems\");
+
+  showWaitModule(0);
+}
+
+" 0
+ E E E E 1 -1 -1 0  0 0
+""0  1
+E "////////////////////////////////////////////////////////////////////////////////////////////////////
+// s7+ driver - symoblic address
+
+string sBRO = \".Browse.\";
+
+string g_s7drvdp;
+string g_parentId;
+string g_requestId;
+string g_station;
+string g_stationshort;
+string g_refstr;
+string g_type;
+int    g_reduact;
+int    g_hmiVisible;
+int    g_direction;
+int    g_rcvMode;
+bool   g_alarm;
+bool   g_tspp;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void closeAndReturn(bool bOk = 0)
+{
+  string sId;
+  string sIdShort;
+
+  if ( g_refstr != \"\" )
+    sId = trItems.selectedItem();
+  else
+    sId = trItems.currentItem();
+
+  if ( strpos(sId, \"|Blocks|\") != -1)
+  {
+    sIdShort = substr(sId, strlen(g_station)+strlen(\"|Blocks|\"));
+    strreplace(sIdShort, \"|\", \".\");
+  }
+  else if ( strpos(sId, \"|Tags|\") != -1)
+  {
+    sIdShort = substr(sId, strlen(g_station)+strlen(\"|Tags|\"));
+    strreplace(sIdShort, \"|\", \".\");
+  }
+  else if ( strpos(sId, \"|Alarms|\") != -1)
+  {
+    sIdShort = substr(sId, strpos(sId, \"|Alarms|\")+strlen(\"|Alarms|\"));
+  }
+  else
+    sIdShort = substr(sId, strlen(g_station)+strlen(\"|\"));
+
+  string sParent = trItems.parent(sId);
+  string sSysType = trItems.getText(sId, 1);
+  string sValType = trItems.getText(sId, 2);
+  int iItemLength = trItems.getText(sId, 3);
+  string sParentSysType = trItems.getText(sParent, 1);
+  string sParentValType = trItems.getText(sParent, 2);
+
+  if ( strlen(sId) && sParent != \"\" )
+  {
+    if ( g_tspp )
+    {
+      if ( sSysType == \"Array\" && strlen(sValType) > 0 )
+      {
+        if ( !bOk )
+          setValue(\"cmdOk\", \"enabled\", TRUE);
+        else
+          PanelOffReturn(makeDynFloat(1), makeDynString(sIdShort, sSysType, sValType, iItemLength));
+      }
+      else
+        setValue(\"cmdOk\", \"enabled\", FALSE);
+    }
+    else if ( trItems.isExpandable(sId) )
+    {
+      if ( sSysType == \"Array\" )
+      {
+        if ( !bOk )
+          setValue(\"cmdOk\", \"enabled\", TRUE);
+        else
+          PanelOffReturn(makeDynFloat(1), makeDynString(sIdShort, sSysType, sValType, iItemLength));
+      }
+      else
+        setValue(\"cmdOk\", \"enabled\", FALSE);
+    }
+    else
+    {
+      //if ( sParentSysType == \"Array\" )
+      //  if ( strpos(sId, \".[\") )
+      //    strreplace(sId, \".[\", \"[\");
+
+      if ( !bOk )
+        setValue(\"cmdOk\", \"enabled\", TRUE);
+      else
+        PanelOffReturn(makeDynFloat(1), makeDynString(sIdShort, sSysType, sValType, iItemLength));
+    }
+  }
+  else
+    setValue(\"cmdOk\", \"enabled\", FALSE);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void refreshTree(string dp1, string sRI,
+                 string dp2, dyn_string dsNP,
+                 string dp3, dyn_langString dlsNC,
+                 string dp4, dyn_string dsST,
+                 string dp5, dyn_string dsVT,
+                 string dp6, dyn_int diIL)
+{
+  string id;
+  bool bAsk = FALSE;
+
+  if ( sRI != g_requestId )
+  {
+    trItems.enabled(TRUE);
+    trItems.updatesEnabled(TRUE);
+    return;
+  }
+
+  trItems.enabled(FALSE);
+  trItems.updatesEnabled(FALSE);
+
+  if ( g_alarm )
+  {
+    if ( !trItems.itemExists(\"Program Alarm\") )
+      trItems.appendItem(g_parentId, \"Program Alarm\", \"Program Alarms\");
+
+    if ( !trItems.itemExists(\"System Alarm\") )
+      trItems.appendItem(g_parentId, \"System Alarm\", \"System Alarms\");
+
+    trItems.setOpen(g_parentId, 1);
+  }
+
+  if ( dynlen(dsNP) > 50 )
+    showWaitModule(1);
+
+  for ( int i = 1; i <= dynlen(dsNP); i++ )
+  {
+    // browsing has no result for queried node
+    if ( !strlen(dsNP[i]) )
+      continue;
+
+    // do not show UDTs
+    //if ( dsST[i] == \"UDT_Group\" )
+    //  continue;
+
+    if ( dsST[i] == \"Block\" )
+      id = g_parentId + \"|Blocks|\" + dsNP[i];
+    else if ( dsST[i] == \"ComplexTag\" )
+      id = g_parentId + \"|Tags|\" + dsNP[i];
+    else if ( dsVT[i] == \"PLC Alarm\" )
+    {
+      g_parentId = dsST[i];
+      id = g_parentId + \"|Alarms|\" + dsNP[i];
+    }
+    else
+      id = g_parentId + \"|\" + dsNP[i];
+
+    // show first 50 items only
+    if ( i > 50 && !bAsk )
+    {
+      string sParentST = trItems.getText(g_parentId, 1);
+      int iParentIL = trItems.getText(g_parentId, 3);
+      string sMsg = getCatStr(\"s7plus\", \"tiaArray>50\");
+      strreplace(sMsg, \"$1\", iParentIL);
+
+      if ( sParentST == \"Array\" )
+      {
+        dyn_float df;
+        dyn_string ds;
+
+        ChildPanelOnCentralModalReturn(\"vision/MessageInfo\",
+                                       getCatStr(\"para\", \"information\"),
+                                       makeDynString(sMsg,
+                                                     getCatStr(\"para\", \"yes\"),
+                                                     getCatStr(\"para\", \"no\")),
+                                       df, ds);
+        bAsk = TRUE;
+
+        if ( !dynlen(df) || !df[1] )
+          break;
+        else
+          continue;
+      }
+    }
+
+    if ( g_parentId == \"System Alarm\" && !trItems.itemExists(g_parentId + \"|Alarms|@SystemErrors@\") )
+    {
+      trItems.appendItem(g_parentId, g_parentId + \"|Alarms|@SystemErrors@\", \"@SystemErrors@\");
+      trItems.setText(g_parentId + \"|Alarms|@SystemErrors@\", 4, getCatStr(\"s7plus\", \"alarmSystemError\"));
+    }
+
+    //if ( !trItems.itemExists(id) )
+    trItems.appendItem(g_parentId, id, dsNP[i]);
+
+    //if ( dsST[i] != \"Variable\" )
+    //  trItems.setText(id, 1, dsST[i]);
+    trItems.setText(id, 1, dsST[i]);
+
+    //if ( dsST[i] == \"Block\" || dsST[i] == \"Array\" )
+    if ( dsST[i] != \"Variable\" && dsST[i] != \"Tag\" && dsVT[i] != \"PLC Alarm\" )
+      trItems.setExpandable(id, TRUE);
+
+    trItems.setText(id, 2, dsVT[i]);
+
+    if ( strpos(dsVT[i], \"[\") >= 0 )
+      dsVT[i] = substr(dsVT[i], 0, strpos(dsVT[i], \"[\"));
+
+    if ( dsST[i] != \"Array\" && ( dsVT[i] == \"String\" || dsVT[i] == \"WString\" ) )
+      diIL[i] = diIL[i] - 2;
+
+    if ( diIL[i] != -1 )
+      trItems.setText(id, 3, diIL[i]);
+
+    string sNC = (string)dlsNC[i];
+
+    if ( g_alarm && sNC != \"\" )
+    {
+      strreplace(sNC, \"\\r\", \"\");
+      strreplace(sNC, \"\\n\", \"\");
+    }
+
+    trItems.setText(id, 4, sNC);
+
+    if ( g_alarm && dsNP[i] == g_refstr )
+    {
+      trItems.setOpen(g_parentId, 1);
+      trItems.setSelectedItem(id);
+      cmdOk.enabled = 1;
+    }
+  }
+
+  trItems.setSorting(0, 1);
+  trItems.setSorting(1, 1);
+
+  trItems.enabled(TRUE);
+  trItems.updatesEnabled(TRUE);
+
+  showWaitModule(0);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+treeConnect(string sDrvDp)
+{
+  dpConnect(\"refreshTree\", FALSE, sDrvDp + sBRO + \"RequestId\"   ,
+                                  sDrvDp + sBRO + \"NodePaths\"   ,
+                                  sDrvDp + sBRO + \"NodeComments\",
+                                  sDrvDp + sBRO + \"SystemTypes\" ,
+                                  sDrvDp + sBRO + \"ValueTypes\"  ,
+                                  sDrvDp + sBRO + \"ItemLengths\" );
+
+  trItems.setOpen(g_station, 1);
+  //dpSet(sDrvDp + sBRO + \"GetBranch\", makeDynString(g_requestId, \"\", g_hmiVisible));
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+treeDisconnect(string sDrvDp)
+{
+  dpDisconnect(\"refreshTree\", sDrvDp + sBRO + \"RequestId\"   ,
+                              sDrvDp + sBRO + \"NodePaths\"   ,
+                              sDrvDp + sBRO + \"NodeComments\",
+                              sDrvDp + sBRO + \"SystemTypes\" ,
+                              sDrvDp + sBRO + \"ValueTypes\"  ,
+                              sDrvDp + sBRO + \"ItemLengths\" );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void showWaitModule(bool bVisible)
+{
+  cmdHelp.enabled   = !bVisible;
+  //cmdOk.enabled     = !bVisible;
+  cmdCancel.enabled = !bVisible;
+
+  if ( !bVisible )
+    delay(0, 500);
+
+  wait_modul_config.visible = bVisible;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+" 0
+ 4
+"CBRef" "1"
+"EClose" E
+"dpi" "96"
+"pdpi" "96"
+0 0 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+2
+LANG:10001 0 
+LANG:10010 0 
+2 25
+"ptAlarmingAddress"
+""
+1 8 15 E E E 1 E 1 E N "_3DText" E N "_3DFace" E E
+ E E
+23 0 0 0 0 0
+E E E
+0
+4
+LANG:10001 0 
+LANG:10010 0 
+LANG:10000 0 
+LANG:10027 0 
+
+4
+"sizePolicy" "Fixed Fixed"
+"layoutAlignment" "AlignCenter"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E 0 1 1 0 1 E U  1 E 10 15 187 35
+0 2 0 "0s" 0 0 0 192 0 0  10 15 1
+4
+LANG:10001 26 arial,-1,18,5,50,0,0,0,0,0
+LANG:10010 26 arial,-1,18,5,50,0,0,0,0,0
+LANG:10000 26 arial,-1,18,5,50,0,0,0,0,0
+LANG:10027 26 arial,-1,18,5,50,0,0,0,0,0
+0 4
+LANG:10001 20 S7+ alarming address
+LANG:10010 20 S7+ alarming address
+LANG:10000 22 S7+ Alarm-Adressierung
+LANG:10027 20 S7+ alarming address
+14 1
+"txtServer"
+""
+1 502.6475740154199 14.00000000000001 E E E 1 E 1 E N "_3DText" E N "_3DFace" E E
+ E E
+1 0 0 0 0 0
+E E E
+0
+4
+LANG:10001 0 
+LANG:10010 0 
+LANG:10000 0 
+LANG:10027 0 
+
+1
+"layoutAlignment" "AlignCenter"
+4
+LANG:10001 26 Arial,-1,13,5,50,0,0,0,0,0
+LANG:10010 26 Arial,-1,13,5,50,0,0,0,0,0
+LANG:10000 26 Arial,-1,13,5,50,0,0,0,0,0
+LANG:10027 26 arial,-1,13,5,50,0,0,0,0,0
+0  488 13 711 39
+2 "0s" 0 0 0 0 0 -1  E E E
+2 2
+"ptSymbolicAddress"
+""
+1 8 15 E E E 1 E 1 E N "_3DText" E N "_3DFace" E E
+ E E
+2 0 0 0 0 0
+E E E
+0
+4
+LANG:10001 0 
+LANG:10010 0 
+LANG:10000 0 
+LANG:10027 0 
+
+4
+"sizePolicy" "Fixed Fixed"
+"layoutAlignment" "AlignCenter"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E 0 1 1 0 1 E U  1 E 10 15 188 35
+0 2 0 "0s" 0 0 0 192 0 0  10 15 1
+4
+LANG:10001 26 arial,-1,18,5,50,0,0,0,0,0
+LANG:10010 26 arial,-1,18,5,50,0,0,0,0,0
+LANG:10000 26 arial,-1,18,5,50,0,0,0,0,0
+LANG:10027 26 arial,-1,18,5,50,0,0,0,0,0
+0 4
+LANG:10001 20 S7+ symbolic address
+LANG:10010 20 S7+ symbolic address
+LANG:10000 25 S7+ Symbolik-Adressierung
+LANG:10027 43 Символьная адресация S7+
+13 11
+"cmdCancel"
+""
+1 437 509 E E E 1 E 1 E N "_ButtonText" E N "_Button" E E
+ E E
+11 0 0 0 27 0
+E E E
+0
+4
+LANG:10001 31 Discard changes and close panel
+LANG:10010 31 Discard changes and close panel
+LANG:10000 42 Änderungen verwerfen und Panel schließen
+LANG:10027 66 Отменить изменения и закрыть панель
+
+1
+"layoutAlignment" "AlignCenter"
+4
+LANG:10001 26 arial,-1,13,5,50,0,0,0,0,0
+LANG:10010 26 arial,-1,13,5,50,0,0,0,0,0
+LANG:10000 26 arial,-1,13,5,50,0,0,0,0,0
+LANG:10027 26 arial,-1,13,5,50,0,0,0,0,0
+0  618 413 706 441
+
+T 
+4
+LANG:10001 6 Cancel
+LANG:10010 6 Cancel
+LANG:10000 9 Abbrechen
+LANG:10027 16 Отменить
+"main()
+{
+  PanelOffReturn(makeDynFloat(), makeDynString());
+}
+
+" 0
+ E E E
+13 12
+"cmdOk"
+""
+1 448 524 E E E 1 E 1 E N "_ButtonText" E N "_Button" E E
+ E E
+12 0 0 0 16777221 0
+E E E
+0
+4
+LANG:10001 30 Accept changes and close panel
+LANG:10010 30 Accept changes and close panel
+LANG:10000 44 Änderungen übernehmen und Panel schließen
+LANG:10027 68 Применить изменения и закрыть панель
+
+1
+"layoutAlignment" "AlignCenter"
+4
+LANG:10001 26 arial,-1,13,5,50,0,0,0,0,0
+LANG:10010 26 arial,-1,13,5,50,0,0,0,0,0
+LANG:10000 26 arial,-1,13,5,50,0,0,0,0,0
+LANG:10027 26 arial,-1,13,5,50,0,0,0,0,0
+0  528 413 616 441
+
+T 
+4
+LANG:10001 2 OK
+LANG:10010 2 OK
+LANG:10000 2 OK
+LANG:10027 2 OK
+"main()
+{
+  closeAndReturn(1);
+}
+
+
+" 0
+ E E E
+13 13
+"cmdHelp"
+""
+1 -67 524 E E E 1 E 1 E N "_ButtonText" E N "_Button" E E
+ E E
+13 0 0 0 112 0
+E E E
+0
+4
+LANG:10001 16 Open online help
+LANG:10010 16 Open online help
+LANG:10000 20 Online Hilfe öffnen
+LANG:10027 14 Справка
+
+1
+"layoutAlignment" "AlignCenter"
+4
+LANG:10001 26 arial,-1,13,5,50,0,0,0,0,0
+LANG:10010 26 arial,-1,13,5,50,0,0,0,0,0
+LANG:10000 26 arial,-1,13,5,50,0,0,0,0,0
+LANG:10027 26 arial,-1,13,5,50,0,0,0,0,0
+0  13 413 101 441
+
+T 
+4
+LANG:10001 4 Help
+LANG:10010 4 Help
+LANG:10000 5 Hilfe
+LANG:10027 14 Справка
+"main()
+{
+  std_help(\"address_s7plus_symbolic\");
+}
+
+
+
+" 0
+ E E E
+29 17
+"trItems"
+""
+1 10 49.9999999999998 E E E 0 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+17 0 0 0 0 0
+E E E
+0
+4
+LANG:10001 0 
+LANG:10010 0 
+LANG:10000 0 
+LANG:10027 0 
+
+6
+"allColumnsShowFocus" "bool TRUE"
+"alternatingRowColors" "bool TRUE"
+"textElideMode" "enum 1"
+"showSortIndicator" "bool FALSE"
+"sortingEnabled" "bool TRUE"
+"layoutAlignment" "AlignCenter"
+4
+LANG:10001 26 Arial,-1,13,5,50,0,0,0,0,0
+LANG:10010 26 Arial,-1,13,5,50,0,0,0,0,0
+LANG:10000 26 Arial,-1,13,5,50,0,0,0,0,0
+LANG:10027 26 arial,-1,13,5,50,0,0,0,0,0
+0  10 50 709 389
+10 TreeWidget
+3
+0 "expanded" "(string id)"
+"  if ( !g_alarm )
+  {
+    dyn_string dsChildren = this.children(id);
+    if ( dynlen(dsChildren) )
+      this.removeItems(dsChildren);
+
+    g_parentId = id;
+
+    dpSet(g_s7drvdp + sBRO + \"GetBranch\", makeDynString(g_requestId, g_parentId, g_hmiVisible));
+
+    this.enabled(TRUE);
+    this.updatesEnabled(TRUE);
+  }"
+0 "doubleClicked" "(string id, int column)"
+"  if ( id != \"\" && column >= 0 )
+    closeAndReturn(1);"
+0 "clicked" "(string id, int column)"
+"  if ( id != \"\" && column >= 0 )
+    closeAndReturn();"
+E2 18
+"ptServer"
+""
+1 410 18 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+18 0 0 0 0 0
+E E E
+0
+4
+LANG:10001 0 
+LANG:10010 0 
+LANG:10000 0 
+LANG:10027 0 
+
+4
+"sizePolicy" "Fixed Fixed"
+"layoutAlignment" "AlignCenter"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E 0 1 1 2 1 E U  0 E 410 18 481 33
+0 2 2 "0s" 0 0 0 192 0 0  410 18 1
+4
+LANG:10001 26 Arial,-1,13,5,50,0,0,0,0,0
+LANG:10010 26 Arial,-1,13,5,50,0,0,0,0,0
+LANG:10000 26 Arial,-1,13,5,50,0,0,0,0,0
+LANG:10027 26 Arial,-1,13,5,50,0,0,0,0,0
+0 4
+LANG:10001 11 Connection:
+LANG:10010 11 Connection:
+LANG:10000 11 Verbindung:
+LANG:10027 20 Подключен.:
+1 26 0 "" 0
+0
+20 21
+"cbHmiVisible"
+""
+1 68 153.8690476190476 E E E 1 E 1 E N "_3DText" E N "_3DFace" E E
+ E E
+21 0 0 0 0 0
+E E E
+0
+4
+LANG:10001 49 Establish connection(s) to PLC and stay connected
+LANG:10010 49 Establish connection(s) to PLC and stay connected
+LANG:10000 54 Verbindung(en) zu SPS herstellen und verbunden bleiben
+LANG:10027 57 Установить подключение(я) к ПЛК
+
+1
+"layoutAlignment" "AlignCenter"
+4
+LANG:10001 26 Arial,-1,13,5,50,0,0,0,0,0
+LANG:10010 26 Arial,-1,13,5,50,0,0,0,0,0
+LANG:10000 26 Arial,-1,13,5,50,0,0,0,0,0
+LANG:10027 26 Arial,-1,13,5,50,0,0,0,0,0
+0  278 14 381 38
+1
+T 
+4
+LANG:10001 11 HMI visible
+LANG:10010 11 HMI visible
+LANG:10000 11 HMI visible
+LANG:10027 17 ЧМИ видим
+
+1 
+2
+LANG:10001 0 
+LANG:10010 0 
+E E
+0 0 0 0 0
+0
+E"main(int button, int state)
+{
+  showWaitModule(1);
+  trItems.clear();
+
+  if ( state )
+    g_hmiVisible = 1;
+  else
+    g_hmiVisible = 0;
+
+  dpSet(g_s7drvdp + sBRO + \"GetBranch\", makeDynString(g_requestId, g_station, g_hmiVisible));
+
+  g_parentId = g_station;
+
+  //if ( !trItems.itemExists(g_station) )
+  trItems.appendItem(\"\", g_station, g_stationshort);
+
+  trItems.enabled(FALSE);
+  trItems.updatesEnabled(FALSE);
+  showWaitModule(0);
+}
+
+
+
+
+
+
+" 0
+29 22
+"wait_modul_config"
+""
+1 11 74 E E E 1 E 0 E N "_WindowText" E N {63,63,63,131} E E
+ E E
+22 0 0 0 0 0
+E E E
+0
+4
+LANG:10001 0 
+LANG:10010 0 
+LANG:10000 0 
+LANG:10027 0 
+
+3
+"frameShape" "enum 0"
+"frameShadow" "enum 48"
+"layoutAlignment" "AlignCenter"
+4
+LANG:10001 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10010 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10000 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+LANG:10027 35 MS Shell Dlg 2,-1,11,5,50,0,0,0,0,0
+0  11 74 110 173
+15 Canvas.Canvas.1
+0
+"main()
+{
+  this.backCol(\"_3DFace\");
+  this.ModuleName = \"wait_modul_config\";
+
+  dyn_int diSize = makeDynInt(698, 315);
+  wait_modul_config.size(diSize[1], diSize[2]);
+
+  RootPanelOnModule(\"vision/wf/objects/Ewo_PlsWait.pnl\",
+                    \"wait_modul_config\",
+                    \"wait_modul_config\",
+                    makeDynString(\"$1:\"+diSize[1],
+                                  \"$2:\"+diSize[2]));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+" 0
+0
+LAYER, 1 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 2 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 3 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 4 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 5 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 6 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 7 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+3 0 "PANEL_REF0" -1
+"layoutAlignment" "AlignCenter"
+"" ""
+"objects_parts/STD_OBJECTS/ButtonBarBackground.pnl" 30 460 T 20 1.440881763527055 0 1 -43.22645290581167 -55
+0
+0

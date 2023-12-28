@@ -7,9 +7,9 @@ class motor_doble : motor_simple
   bool Yd_OM_F2;
   bool XYd_M_OM_F2;
   //[SnDpeGroup=DATOS_ALARMA]
-  bool Xt_TiempoVigilancia_CM_F2;
+  float Xt_TiempoVigilancia_CM_F2;
   //[SnDpeGroup=DATOS_ALARMA]
-  bool Xt_TiempoVigilancia_CP_F2;
+  float Xt_TiempoVigilancia_CP_F2;
   public motor_doble()
   {
   }
@@ -54,24 +54,24 @@ class motor_doble : motor_simple
     set("XYd_M_OM_F2", XYd_M_OM_F2);
   }
 
-  public bool isXt_TiempoVigilancia_CM_F2()
-  {
-    return get("Xt_TiempoVigilancia_CM_F2", this.Xt_TiempoVigilancia_CM_F2);
-  }
-
-  public void setXt_TiempoVigilancia_CM_F2(bool Xt_TiempoVigilancia_CM_F2)
-  {
-    set("Xt_TiempoVigilancia_CM_F2", Xt_TiempoVigilancia_CM_F2);
-  }
-
-  public bool isXt_TiempoVigilancia_CP_F2()
+  public float getXt_TiempoVigilancia_CP_F2()
   {
     return get("Xt_TiempoVigilancia_CP_F2", this.Xt_TiempoVigilancia_CP_F2);
   }
 
-  public void setXt_TiempoVigilancia_CP_F2(bool Xt_TiempoVigilancia_CP_F2)
+  public void setXt_TiempoVigilancia_CP_F2(float Xt_TiempoVigilancia_CP_F2)
   {
     set("Xt_TiempoVigilancia_CP_F2", Xt_TiempoVigilancia_CP_F2);
+  }
+
+  public float getXt_TiempoVigilancia_CM_F2()
+  {
+    return get("Xt_TiempoVigilancia_CM_F2", this.Xt_TiempoVigilancia_CM_F2);
+  }
+
+  public void setXt_TiempoVigilancia_CM_F2(float Xt_TiempoVigilancia_CM_F2)
+  {
+    set("Xt_TiempoVigilancia_CM_F2", Xt_TiempoVigilancia_CM_F2);
   }
 
   public void arranqueManualInverso()
@@ -88,5 +88,13 @@ class motor_doble : motor_simple
     {
       setXYd_M_OM_F1(0);
     }
+  }
+
+  public cambioTiempoVigilanciaParoInverso(float tiempo){
+    setXt_TiempoVigilancia_CP_F2(tiempo);
+  }
+
+  public cambioTiempoVigilanciaArranqueInverso(float tiempo){
+    setXt_TiempoVigilancia_CM_F2(tiempo);
   }
 };

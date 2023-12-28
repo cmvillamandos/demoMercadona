@@ -1,0 +1,180 @@
+V 14
+2
+LANG:10001 0 
+LANG:10010 19 TablaConfiguración
+PANEL,-1 -1 1024 660 N "_3DFace" 1
+"$INST"
+E E E E E 1 -1 -1 0  51 163
+""0  1
+E "string consulta, dp, tipo, tipoValor, variable, descripcion;
+dyn_int linea;
+dyn_dyn_anytype resultadoConsulta;
+int i, direction;
+string inst = $INST;
+" 0
+ 4
+"CBRef" "1"
+"EClose" E
+"dpi" "120"
+"pdpi" "141.951"
+0 0 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+2
+LANG:10001 0 
+LANG:10010 0 
+25 2
+"tabla_faceplates"
+"MEDIANO_AZUL"
+1 -0.5 -0.1704260651629284 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+1 0 0 0 0 0
+E E E
+0
+2
+LANG:10001 0 
+LANG:10010 0 
+
+1
+"layoutAlignment" "AlignNone"
+2
+LANG:10001 30 Noto Sans,-1,20,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,20,5,50,0,0,0,0,0
+0  -2.5 -3.000000000000021 1026.5 663
+"main()
+{
+  dpSet(\"Variables_Internas_Scada.actualizarTablaFaceplate\", TRUE);
+  dpConnect(\"actualizarTabla\", \"Variables_Internas_Scada.actualizarTablaFaceplate\");
+}
+void actualizarTabla(string dp1, bool valor)
+{
+  if (valor)
+  {
+    this.deleteAllLines();
+    this.tableMode(TABLE_SELECT_BROWSE);
+    this.selectByClick(TABLE_SELECT_LINE);
+
+
+    consulta = \"SELECT '_online.._value' FROM '*' WHERE _DP = \\\"\" + inst + \"\\\"\";
+    dpQuery(consulta, resultadoConsulta);
+
+    for (i = 2 ; i <= dynlen(resultadoConsulta)-1; i++)
+    {
+      dp = resultadoConsulta[i][1];
+      dpGet(dp + \":_address.._direction\", direction);
+
+      if (direction == 4)
+      {
+        tipo = \"R\";
+      }
+      else if (direction == 6)
+      {
+        tipo = \"R/W\";
+      }
+
+      strreplace(dp, \"System1:\" + inst + \".\", \"\");
+      dpSubStr(resultadoConsulta[i][1], DPSUB_DP_EL);
+      setValue(\"tabla_faceplates\", \"appendLine\",
+               \"Variable\", dp,
+               \"Valor\", resultadoConsulta[i][2],
+               \"Tipo\", tipo);
+      this.adjustColumn(0);
+      this.columnEditable(0, FALSE);
+      this.columnEditable(1, FALSE);
+      this.columnEditable(2, FALSE);
+
+    }
+  }
+
+  this.lineVisible(1);
+}
+" 0
+"main(int row, string column, string value)
+
+{
+
+  getValue(\"\", \"getSelectedLines\", linea);
+  getValue(\"\", \"cellValueRC\", linea[1], \"Tipo\", tipoValor);
+  getValue(\"\", \"cellValueRC\", linea[1], \"Variable\", variable);
+  DebugN(\"La variable es: \" + \"\" + variable);
+
+  if (tipoValor == \"R/W\")
+  {
+    ChildPanelOnCentralModal(\"vision/faceplates/531_LIB_ACCIONAMIENTO_MOTOR_D_VARIADOR/531_LIB_ACCIONAMIENTO_MOTOR_D_VARIADOR_TABLA_CONFIG\", inst + \".\" + variable, makeDynString(\"$INST:\" + inst, \"$VARIABLE:\" + variable));
+
+  }
+  else
+  {
+     ChildPanelOnCentralModal(\"vision/emergentes/internas/mensaje_advertencia.pnl\", inst + \".\" + variable, makeDynString(\"$INST:\" + inst, \"$VARIABLE:\" + variable));
+  }
+}
+" 0
+ 1 0 1 3 0 "Variable" 6 1 1 "[0s,,,AlignLeft|AlignVCenter]" 2
+LANG:10001 2 #1
+LANG:10010 8 Variable
+E
+2
+LANG:10001 0 
+LANG:10010 0 
+
+420 "Valor" 6 1 1 "[0s,,,AlignHCenter|AlignVCenter]" 2
+LANG:10001 2 #1
+LANG:10010 5 Valor
+E
+2
+LANG:10001 0 
+LANG:10010 0 
+
+220 "Tipo" 6 1 1 "[0s,,,AlignHCenter|AlignVCenter]" 2
+LANG:10001 2 #1
+LANG:10010 4 Tipo
+E
+2
+LANG:10001 0 
+LANG:10010 0 
+
+387 
+24 24 10 0
+2
+LANG:10001 30 Noto Sans,-1,20,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,20,5,50,0,0,0,0,0
+0 0 1 1 1 7
+1 0
+0
+LAYER, 1 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 2 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 3 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 4 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 5 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 6 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 7 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+0

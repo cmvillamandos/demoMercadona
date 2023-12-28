@@ -1,0 +1,989 @@
+V 14
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+PANEL,-1 -1 958 940 N "LIB_IRC_BLANCO" 0
+"main()
+{
+  setWindowTitle(myModuleName(), myPanelName(), \"Creación DP'S - CSV\"); //title que aparece en el Frame del Panel
+}" 0
+ E E E E 1 -1 -1 0  70 29
+""0  1
+E "/***************************************************************************************
+  @brief Realizamos el vaciado de todo los DPT menos sus master.
+****************************************************************************************/
+void vaciarDPT(dyn_dyn_anytype filasCSV)
+{
+  int errorDP, posicion;
+  dyn_string dpsLista;
+  dyn_anytype filaCSV;
+  dyn_string dpTypesLista, name, options;
+  string nomLibreria, nomLibreriaCSV, dp, dps, subscription;
+
+  dpTypesLista = dpTypes(\"*_LIB_*\");  //Recuperamos todo el listado de dpTypes del PARA que forman parte de la librería de IRC
+  dpGet(\"_S7PlusConfig.Subscriptions.Names\", name,
+        \"_S7PlusConfig.Subscriptions.Options\", options);
+
+  for (int s = 2; s <= dynlen(filasCSV); s++)
+  {
+    filaCSV = filasCSV[s];  //Recuperamos la fila s del Array con la información del CSV
+    nomLibreriaCSV = filaCSV[1];  //Recuperamos de la columna 1 el nombre de la librería de PLC
+    subscription = filaCSV[8]; // Recuperamos de la columna 8 la subcription
+    nomLibreria = dynPatternMatch(nomLibreriaCSV, dpTypesLista);
+    dpsLista = dpNames(\"*\", nomLibreria);
+
+    for (int b = 1; b <= dynlen(dpsLista); b++)
+    {
+      dps = dpsLista[b];
+
+      if (dpExists(dps) && !dps.contains(\"mp_\"))
+      {
+        errorDP = dpDelete(dpsLista[b]); //Borramos el DP b
+
+        if (errorDP != 0)
+        {
+          DebugN(\"---------------No se ha podido borrar el DP---------------\");
+        }
+      }
+
+      delay(0, 05);
+
+      if (dpExists(subscription))//Borramos la subcripcion asociada al dp
+      {
+        errorDP = dpDelete(subscription);
+
+        if (errorDP != 0)
+        {
+          DebugN(\"---------------No se ha podido borrar la Subscription---------------\");
+        }
+
+        delay(0, 05);
+
+        posicion = dynContains(name, subscription);
+
+        if (posicion > 0)
+        {
+          dynRemove(name, posicion);
+          dynRemove(options, posicion);
+        }
+      }
+    }
+  }
+
+  //Borramos la subcripcion asociada al dp
+  dpSet(\"_S7PlusConfig.Subscriptions.Names\", name,
+        \"_S7PlusConfig.Subscriptions.Pollgroups\", name,
+        \"_S7PlusConfig.Subscriptions.Options\", options);
+  crearDPSegunMDP(filasCSV);// Creamos todos los DP del CSV
+}
+/******* Fin de la función vaciarDPT() *********/
+
+/***************************************************************************************
+  @brief Realizamos el vaciado de todo los DPT conservando el MDP o no, dependiendo de
+  opción pasada como parámetro, 1 eliminará el MDP y un 2 lo conservará.
+****************************************************************************************/
+void crearDPSegunMDP(dyn_dyn_anytype filasCSV)
+{
+  int errorDPcopy, tipoTrans, hayArchive, hayAlert;
+  dyn_string dpTypesLista, name, options;
+  dyn_dyn_anytype resultado_consulta;
+  dyn_anytype filaCSV;
+  mapping variablesAddress, unidadesVariables, descripcionVariables;
+  string unidad, nomDPTLibreriaCSV, nomLibreriaMDP, nomInstanciaCSV, descripcionCSV, alias, subscriptionCSV, descripcionDpe, elNombre, conexionCSV, tipoAddressCSV;
+  string consulta, dpeNombre, dpeInstanciaArrayST, instanciaST, referenciaActual;
+  bool activaAddress, activoArchiveCSV, unidadCSV, activoBDCSV;
+
+  for (int s = 2; s <= dynlen(filasCSV); s++)
+  {
+    dpGet(\"_S7PlusConfig.Subscriptions.Names\", name,
+          \"_S7PlusConfig.Subscriptions.Options\", options);
+
+    filaCSV = filasCSV[s];  //Recuperamos la fila i del Array con la información del CSV
+    nomDPTLibreriaCSV = filaCSV[1];  //Recuperamos de la columna 1 el nombre de la librería de PLC
+    nomInstanciaCSV = filaCSV[2];  //Recuperamos de la columna 2 el nombre de la instacia de PLC
+    descripcionCSV = filaCSV[3];  //Recuperamos de la columna 3 la descripción de la instancia de PLC
+    alias = filaCSV[4];  //Recuperamos de la columna 4 el tag eléctrico de PLC
+    unidadCSV = filaCSV[5];  //Recuperamos de la columna 5 si lleva unidad
+    activoArchiveCSV = filaCSV[6]; //Recuperamos de la columna 6 si el archive a la RAIMA va activo o no.
+    activoBDCSV = filaCSV[7];  //Recuperamos de la columna 7 si el almacenado en la BBDD SQL Server va activo o no.
+    subscriptionCSV = filaCSV[8];  //Recuperamos de la columna 8 el nombre de la subscription
+    tipoAddressCSV = filaCSV[9]; //Columna 9 - Tipo de address
+    conexionCSV = filaCSV[10]; //Columna 10 - Conexion para el datapoint
+
+
+    if (!dpExists(nomInstanciaCSV))
+    {
+      if (tipoAddressCSV = \"S7PLUS\")
+      {
+        nomLibreriaMDP = \"mp_\"  + nomDPTLibreriaCSV;  //Encontramos la ocurrencia de la librería a copiar dentro de los DPT's
+      }
+      else
+      {
+        nomLibreriaMDP = \"mp_opcua_\"  + nomDPTLibreriaCSV;  //Encontramos la ocurrencia de la librería a copiar dentro de los DPT's
+      }
+
+      dpCopyBufferClear();
+      dpCopy(nomLibreriaMDP, conexionCSV + \"_\" + nomInstanciaCSV, errorDPcopy);  //Copiamos el nuevo DP con el nombre de la instancia nueva con la configuración del MDP correspondiente
+
+      delay(0, 05);
+
+      //Creamos una subscripción para cada DP que creemos, a no ser que ya exista
+      if (!dpExists(subscriptionCSV))
+      {
+        dpCreate(subscriptionCSV, \"_PollGroup\");
+
+        delay(0, 05);
+
+        dpSetWait(subscriptionCSV + \".PollInterval\", 500);
+        dpSetWait(subscriptionCSV + \".Active\", TRUE);
+
+        dynAppend(name, subscriptionCSV);
+        dynAppend(options, \"1\");
+      }
+
+      dpSetWait(\"_S7PlusConfig.Subscriptions.Names\", name,
+                \"_S7PlusConfig.Subscriptions.Pollgroups\", name,
+                \"_S7PlusConfig.Subscriptions.Options\", options);
+
+
+      dpSetDescription(conexionCSV + \"_\" + nomInstanciaCSV + \".\", descripcionCSV);  //Establecemos la descripción del DP nuevo
+      dpSetAlias(conexionCSV + \"_\" + nomInstanciaCSV + \".\", alias);  //Establecemos el Alias del DP nuevo
+
+      if (activoBDCSV && dpExists(conexionCSV + \"_\" + nomInstanciaCSV + \".Static.archivado_bbdd:_original.._value\"))
+      {
+        dpSetWait(conexionCSV + \"_\" + nomInstanciaCSV + \".Static.archivado_bbdd:_original.._value\", TRUE);
+      }
+      else if (!activoBDCSV && dpExists(conexionCSV + \"_\" + nomInstanciaCSV + \".Static.archivado_bbdd:_original.._value\"))
+      {
+        dpSetWait(conexionCSV + \"_\" + nomInstanciaCSV + \".Static.archivado_bbdd:_original.._value\", FALSE);
+      }
+
+      consulta = \"SELECT '_online.._value' FROM '\" + conexionCSV + \"_\" + nomInstanciaCSV + \".**' WHERE _DPT LIKE \\\"\" + nomDPTLibreriaCSV + \"\\\"\";
+      dpQuery(consulta, resultado_consulta);
+      dynRemove(resultado_consulta, 1);
+      variablesAddress = recuperarEstadoAddressClase(nomDPTLibreriaCSV);
+      unidadesVariables = recuperarUnidadesClase(nomDPTLibreriaCSV);
+      descripcionVariables = recuperarDescripcionesClase(nomDPTLibreriaCSV);
+
+      for (int s = 1; s <= dynlen(resultado_consulta); s++)
+      {
+        dpeNombre = resultado_consulta[s][1];
+        dpeNombre = dpSubStr(dpeNombre, DPSUB_DP_EL);
+        elNombre = dpeNombre;
+        strreplace(elNombre, conexionCSV + \"_\" + nomInstanciaCSV + \".\", \"\");
+
+        if (!dpeNombre.contains(\"archivado_bbdd\"))  //Comprobamos que el nombre de la instancia de la query sea igual a la variable de la clase con el address a activar
+          //Comprobamos si la variable de la instancia en cuestión es archivado_bbdd, ya que esta no tiene address y, por tanto, no hay que definirle las características que se definen abajo.
+        {
+
+          referenciaActual = dpeNombre;
+          strreplace(referenciaActual, conexionCSV + \"_\", \"\");
+          strreplace(referenciaActual, \"(\", \"[\");
+          strreplace(referenciaActual, \")\", \"]\");
+          activaAddress = variablesAddress.value(elNombre, \"\"); //Recuperamos si la instancia tiene activa o no el address
+//             dpGet(dpeNombre + \":_address.._reference\", referenciaActual);  //Se obtiene el valor actual de address que tiene la variable para comprobar si ya está mapeada o no
+//             strreplace(referenciaActual, \"*\", nomInstanciaCSV);  //En caso de estar por defecto, en el lugar de la instancia hay un asterisco que aquí sustituimos por la instancia
+//             dpSetWait(dpeNombre + \":_address.._reference\", referenciaActual);  //Actualiza el valor actual del address, ya modificado
+          dpSetWait(dpeNombre + \":_address.._reference\", referenciaActual);  //Actualiza el valor actual del address, ya modificado
+          dpSetWait(dpeNombre + \":_address.._poll_group\", subscriptionCSV);  //Setea el valor de la subscripcion/poll group
+          dpSetWait(dpeNombre + \":_address.._connection\", \"_\" + conexionCSV);  //Setea el valor de la subscripcion/poll group
+          dpGet(dpeNombre + \":_address.._datatype\", tipoTrans);
+          hayArchive = 0;
+
+          if (activoArchiveCSV && tipoTrans != 1002)
+          {
+            dpGet(dpeNombre + \":_archive.._type\", hayArchive);
+          }
+
+          if (activoArchiveCSV && tipoTrans != 1002 && hayArchive == 45)
+          {
+            DebugN(\"activoArchiveCSV\", activoArchiveCSV);
+            DebugN(\"tipoTrans\", tipoTrans);
+            DebugN(\"hayArchive\", hayArchive);
+            DebugN(\"dpeNombre\", dpeNombre);
+
+            dpSetWait(dpeNombre + \":_archive.._archive\", TRUE);
+          }
+
+          else if (!activoArchiveCSV && tipoTrans != 1002 && hayArchive == 45)
+          {
+            DebugN(\"activoArchiveCSV\", activoArchiveCSV);
+            DebugN(\"tipoTrans\", tipoTrans);
+            DebugN(\"hayArchive\", hayArchive);
+            DebugN(\"dpeNombre\", dpeNombre);
+            dpSetWait(dpeNombre + \":_archive.._archive\", FALSE);
+          }
+
+          dpGet(dpeNombre + \":_alert_hdl.._type\", hayAlert);
+
+          if (hayAlert != 0)
+          {
+            dpSetWait(dpeNombre + \":_alert_hdl.._active\", TRUE);
+          }
+
+          if (unidadCSV)
+          {
+            unidad = unidadesVariables.value(elNombre, \"\");
+          }
+
+          dpSetUnit(dpeNombre, unidad);
+          dpSetDescription(dpeNombre, descripcionVariables.value(elNombre, \"\"));
+          dpSet(dpeNombre + \":_address.._active\", activaAddress); //Activa el address, si es necesario
+
+        }
+      }
+    }
+
+    DebugN(\"------------------Configuración completada------------------\");
+  }
+}
+/******* Fin de la función crearDPSegunMDP() *********/
+
+/***************************************************************************************
+  @brief Creamos y mapeamos o solo mapeamos los dps contenidos en el CSV.
+****************************************************************************************/
+void crearRemapearDPSegunMDP(dyn_dyn_anytype filasCSV)
+{
+  int errorDPcopy, tipoTrans, hayArchive, hayAlert;
+  dyn_string dpTypesLista, name, options;
+  dyn_dyn_anytype resultado_consulta;
+  dyn_anytype filaCSV;
+  mapping variablesAddress, unidadesVariables, descripcionVariables;
+  string unidad, nomDPTLibreriaCSV, nomLibreriaMDP, nomInstanciaCSV, descripcionCSV, alias, subscriptionCSV, descripcionDpe, elNombre, conexionCSV, tipoAddressCSV;
+  string consulta, dpeNombre, dpeInstanciaArrayST, instanciaST, referenciaActual;
+  bool activaAddress, activoArchiveCSV, unidadCSV, activoBDCSV;
+
+  for (int s = 2; s <= dynlen(filasCSV); s++)
+  {
+    dpGet(\"_S7PlusConfig.Subscriptions.Names\", name,
+          \"_S7PlusConfig.Subscriptions.Options\", options);
+
+    filaCSV = filasCSV[s];  //Recuperamos la fila i del Array con la información del CSV
+    nomDPTLibreriaCSV = filaCSV[1];  //Recuperamos de la columna 1 el nombre de la librería de PLC
+    nomInstanciaCSV = filaCSV[2];  //Recuperamos de la columna 2 el nombre de la instacia de PLC
+    descripcionCSV = filaCSV[3];  //Recuperamos de la columna 3 la descripción de la instancia de PLC
+    alias = filaCSV[4];  //Recuperamos de la columna 4 el tag eléctrico de PLC
+    unidadCSV = filaCSV[5];  //Recuperamos de la columna 5 si lleva unidad
+    activoArchiveCSV = filaCSV[6]; //Recuperamos de la columna 6 si el archive a la RAIMA va activo o no.
+    activoBDCSV = filaCSV[7];  //Recuperamos de la columna 7 si el almacenado en la BBDD SQL Server va activo o no.
+    subscriptionCSV = filaCSV[8];  //Recuperamos de la columna 8 el nombre de la subscription
+    tipoAddressCSV = filaCSV[9]; //Columna 9 - Tipo de address
+    conexionCSV = filaCSV[10]; //Columna 10 - Conexion para el datapoint
+
+
+    if (!dpExists(nomInstanciaCSV))
+    {
+      if (tipoAddressCSV = \"S7PLUS\")
+      {
+        nomLibreriaMDP = \"mp_\"  + nomDPTLibreriaCSV;  //Encontramos la ocurrencia de la librería a copiar dentro de los DPT's
+      }
+      else
+      {
+        nomLibreriaMDP = \"mp_opcua_\"  + nomDPTLibreriaCSV;  //Encontramos la ocurrencia de la librería a copiar dentro de los DPT's
+      }
+
+      dpCopyBufferClear();
+      dpCopy(nomLibreriaMDP, conexionCSV + \"_\" + nomInstanciaCSV, errorDPcopy);  //Copiamos el nuevo DP con el nombre de la instancia nueva con la configuración del MDP correspondiente
+
+      delay(0, 05);
+    }
+
+    //Creamos una subscripción para cada DP que creemos, a no ser que ya exista
+    if (!dpExists(subscriptionCSV))
+    {
+      dpCreate(subscriptionCSV, \"_PollGroup\");
+
+      delay(0, 05);
+
+      dpSetWait(subscriptionCSV + \".PollInterval\", 500);
+      dpSetWait(subscriptionCSV + \".Active\", TRUE);
+
+      dynAppend(name, subscriptionCSV);
+      dynAppend(options, \"1\");
+    }
+
+    dpSetWait(\"_S7PlusConfig.Subscriptions.Names\", name,
+              \"_S7PlusConfig.Subscriptions.Pollgroups\", name,
+              \"_S7PlusConfig.Subscriptions.Options\", options);
+
+
+    dpSetDescription(conexionCSV + \"_\" + nomInstanciaCSV + \".\", descripcionCSV);  //Establecemos la descripción del DP nuevo
+    dpSetAlias(conexionCSV + \"_\" + nomInstanciaCSV + \".\", alias);  //Establecemos el Alias del DP nuevo
+
+    if (activoBDCSV && dpExists(conexionCSV + \"_\" + nomInstanciaCSV + \".Static.archivado_bbdd:_original.._value\"))
+    {
+      dpSetWait(conexionCSV + \"_\" + nomInstanciaCSV + \".Static.archivado_bbdd:_original.._value\", TRUE);
+    }
+    else if (!activoBDCSV && dpExists(conexionCSV + \"_\" + nomInstanciaCSV + \".Static.archivado_bbdd:_original.._value\"))
+    {
+      dpSetWait(conexionCSV + \"_\" + nomInstanciaCSV + \".Static.archivado_bbdd:_original.._value\", FALSE);
+    }
+
+    consulta = \"SELECT '_online.._value' FROM '\" + conexionCSV + \"_\" + nomInstanciaCSV + \".**' WHERE _DPT LIKE \\\"\" + nomDPTLibreriaCSV + \"\\\"\";
+    dpQuery(consulta, resultado_consulta);
+    dynRemove(resultado_consulta, 1);
+    variablesAddress = recuperarEstadoAddressClase(nomDPTLibreriaCSV);
+    unidadesVariables = recuperarUnidadesClase(nomDPTLibreriaCSV);
+    descripcionVariables = recuperarDescripcionesClase(nomDPTLibreriaCSV);
+
+    for (int s = 1; s <= dynlen(resultado_consulta); s++)
+    {
+      dpeNombre = resultado_consulta[s][1];
+      dpeNombre = dpSubStr(dpeNombre, DPSUB_DP_EL);
+      elNombre = dpeNombre;
+      strreplace(elNombre, conexionCSV + \"_\" + nomInstanciaCSV + \".\", \"\");
+
+      if (!dpeNombre.contains(\"archivado_bbdd\"))  //Comprobamos que el nombre de la instancia de la query sea igual a la variable de la clase con el address a activar
+        //Comprobamos si la variable de la instancia en cuestión es archivado_bbdd, ya que esta no tiene address y, por tanto, no hay que definirle las características que se definen abajo.
+      {
+
+        referenciaActual = dpeNombre;
+        strreplace(referenciaActual, conexionCSV + \"_\", \"\");
+        activaAddress = variablesAddress.value(elNombre, \"\"); //Recuperamos si la instancia tiene activa o no el address
+//             dpGet(dpeNombre + \":_address.._reference\", referenciaActual);  //Se obtiene el valor actual de address que tiene la variable para comprobar si ya está mapeada o no
+//             strreplace(referenciaActual, \"*\", nomInstanciaCSV);  //En caso de estar por defecto, en el lugar de la instancia hay un asterisco que aquí sustituimos por la instancia
+//             dpSetWait(dpeNombre + \":_address.._reference\", referenciaActual);  //Actualiza el valor actual del address, ya modificado
+        dpSetWait(dpeNombre + \":_address.._reference\", referenciaActual);  //Actualiza el valor actual del address, ya modificado
+        dpSetWait(dpeNombre + \":_address.._poll_group\", subscriptionCSV);  //Setea el valor de la subscripcion/poll group
+        dpSetWait(dpeNombre + \":_address.._connection\", \"_\" + conexionCSV);  //Setea el valor de la subscripcion/poll group
+        dpGet(dpeNombre + \":_address.._datatype\", tipoTrans);
+        hayArchive = 0;
+
+        if (activoArchiveCSV && tipoTrans != 1002)
+        {
+          dpGet(dpeNombre + \":_archive.._type\", hayArchive);
+        }
+
+        if (activoArchiveCSV && tipoTrans != 1002 && hayArchive == 45)
+        {
+          DebugN(\"activoArchiveCSV\", activoArchiveCSV);
+          DebugN(\"tipoTrans\", tipoTrans);
+          DebugN(\"hayArchive\", hayArchive);
+          DebugN(\"dpeNombre\", dpeNombre);
+
+          dpSetWait(dpeNombre + \":_archive.._archive\", TRUE);
+        }
+
+        else if (!activoArchiveCSV && tipoTrans != 1002 && hayArchive == 45)
+        {
+          DebugN(\"activoArchiveCSV\", activoArchiveCSV);
+          DebugN(\"tipoTrans\", tipoTrans);
+          DebugN(\"hayArchive\", hayArchive);
+          DebugN(\"dpeNombre\", dpeNombre);
+          dpSetWait(dpeNombre + \":_archive.._archive\", FALSE);
+        }
+
+        dpGet(dpeNombre + \":_alert_hdl.._type\", hayAlert);
+
+        if (hayAlert != 0)
+        {
+          dpSetWait(dpeNombre + \":_alert_hdl.._active\", TRUE);
+        }
+
+        if (unidadCSV)
+        {
+          unidad = unidadesVariables.value(elNombre, \"\");
+        }
+
+        dpSetUnit(dpeNombre, unidad);
+        dpSetDescription(dpeNombre, descripcionVariables.value(elNombre, \"\"));
+        dpSet(dpeNombre + \":_address.._active\", activaAddress); //Activa el address, si es necesario
+
+      }
+    }
+
+
+    DebugN(\"------------------Configuración completada------------------\");
+  }
+}
+/******* Fin de la función crearRemapearDPSegunMDP() *********/
+
+/***************************************************************************************
+  @brief Comprobamos si el CSV está correcto para poder continuar con el proceso o
+  detenerlo en este punto para no corromper el PARA.
+****************************************************************************************/
+bool comprobarCSV(dyn_dyn_anytype contenidoCSV)
+{
+  dyn_anytype filaCSV;
+  dyn_string dpTypesLista;
+  string nomDPTLibreriaCSV, nomInstanciaCSV, descripcionCSV, aliasCSV, unidadCSV, archivadoCSV, insertBD, nomLibreriaDPT, subscription;
+
+  dpTypesLista = dpTypes(\"*_LIB_*\");   //Recuperamos todo el listado de MDP del PARA que forman parte de la librería de IRC
+
+  for (int s = 2; s <= dynlen(contenidoCSV); s++)
+  {
+    filaCSV = contenidoCSV[s]; //Recuperamos las filas, una a una, para analizarlas
+    nomDPTLibreriaCSV = filaCSV[1];   //Recuperamos de la columna 2 el nombre de la librería de PLC
+    nomInstanciaCSV = filaCSV[2];  //Recuperamos de la columna 3 el nombre de la instacia de PLC
+    descripcionCSV = filaCSV[3];  //Recuperamos de la columna 4 la descripción de la instancia de PLC
+    aliasCSV = filaCSV[4];  //Recuperamos de la columna 5 el tag eléctrico de PLC
+    unidadCSV = filaCSV[5];  //Recuperamos de la columna 6 si lleva unidad
+    archivadoCSV = filaCSV[6];  //Recuperamos de la columna 7 si lleva activo el archivado en la RAIMA
+    insertBD = filaCSV[7];  //Recuperamos de la columna 8 si lleva activo el guardado en la BBDD SQL Server
+    subscription = filaCSV[8];  //Recuperamos de la columna 9 el nombre de la subscription
+
+    nomLibreriaDPT = dynPatternMatch(nomDPTLibreriaCSV, dpTypesLista); //Encontramos la ocurrencia de la librería a copiar dentro de los DPT's
+
+    if (nomLibreriaDPT.isEmpty())  return FALSE; //Comprobamos si en el CSV la librería empieza correctamente y si se asocia a alguna librería existente
+    else if (nomInstanciaCSV.isEmpty())  return FALSE; //Comprobamos que la instancia tiene nombre asignado
+    else if (descripcionCSV.isEmpty())  return FALSE; //Comprobamos que la descripcion tiene nombre asignado
+    else if (aliasCSV.isEmpty())  return FALSE; //Comprobamos que el tag electrico esté relleno
+    else if (unidadCSV.isEmpty())  return FALSE; //Comprobamos que la unidad esté rellena
+    else if (archivadoCSV.isEmpty())  return FALSE; //Comprobamos que el archivado en la RAIMA esté relleno
+    else if (insertBD.isEmpty())  return FALSE; //Comprobamos que el guardado en la BBDD SQL Server esté relleno
+    else if (subscription.isEmpty())  return FALSE; //Comprobamos que la subscription esté rellena
+
+    //DebugN(s);
+  }
+
+  return TRUE;
+}
+/******* Fin de la función comprobarCSV() *********/
+" 0
+ 5
+"CBRef" "1"
+"EClose" E
+"windowIcon" "iconos/ventanas/configuracion.svg"
+"dpi" "96"
+"pdpi" "96"
+0 0 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+2
+LANG:10001 0 
+LANG:10010 0 
+6 17
+"rect_fondo_config"
+""
+1 20 10 E E E 1 E 1 E N "_Transparent" E N "LIB_IRC_AZUL_03" E E
+ E E
+12 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+4
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E -1 1 3 2 1 E 8.71818181818182 0 0.7250000000000001 -173.8636363636366 -7.25 4 "[linear,pad,0,0,-0.012,0.988,0.00671,LIB_IRC_AZUL_03,0.987,_Transparent]" E 20 10 130 50
+6 18
+"RECTANGLE1"
+""
+1 20.00000000000006 9.914552621450525 E E E 1 E 1 E N "_Transparent" E N "LIB_IRC_AZUL_03" E E
+ E E
+13 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+4
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E -1 1 3 2 1 E -8.71818181818182 7.947229372475014e-16 -1.820291579459158e-15 -0.7250000000000001 1133.863636363636 947.1880506505515 4 "[linear,pad,0,0,-0.012,0.988,0.00671,LIB_IRC_AZUL_03,0.987,_Transparent]" E 20 10 130 50
+13 8
+"btn_csv"
+"GRANDE_BLANCO"
+1 607.1999999999999 707.5259740259741 E E E 1 E 1 E N "_ButtonText" E N "_Button" E E
+ E E
+3 0 0 0 0 0
+E E E
+1
+6
+LANG:10001 6 Accept
+LANG:10010 12 Hacer mágia
+LANG:10011 6 Accept
+LANG:10009 6 Accept
+LANG:10008 6 Accept
+LANG:10018 6 Accept
+
+5
+"shadowOffset" "[5,5]"
+"shadowColor" "{63,63,63,70}"
+"shadowRadius" "18"
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  438.8000000000001 691.5 521.1999999999999 759.0844155844156
+
+P 
+4294967295
+"pictures/iconos/botoneras/magia.svg"
+6
+LANG:10001 12 PUSH_BUTTON1
+LANG:10010 12 PUSH_BUTTON1
+LANG:10011 12 PUSH_BUTTON1
+LANG:10009 12 PUSH_BUTTON1
+LANG:10008 12 PUSH_BUTTON1
+LANG:10018 12 PUSH_BUTTON1
+"main(mapping event)
+{
+  bool CSVexiste, CSVcorrecto;
+  string pathCSV, extensionCSV;
+  int opcion_vaciado;
+
+  pathCSV = txf_path_csv.text;
+
+  CSVexiste = isfile(pathCSV);
+  extensionCSV = getExt(pathCSV);
+
+  if (CSVexiste && extensionCSV == \"csv\")  //Comprobamos que el fichero exista y que el fichero introducido tenga la extensión CSV
+  {
+    dyn_string lineas;
+    string contenido_fichero_st;
+    dyn_dyn_anytype contenido_fichero;
+
+    ae_loading_ewo.visible(TRUE);  //Hacemos visible la animación del loading
+    ae_loading_ewo.start();  //Iniciamos la animación del loading
+
+    fileToString(pathCSV, contenido_fichero_st, \"ISO88591\");  //Carga un fichero ASCCII y vuelca su contenido dentro de una variable string
+    lineas = strsplit(contenido_fichero_st, \"\\n\");
+
+    for (int u = 1; u <= dynlen(lineas); u++)
+    {
+      contenido_fichero[u] = strsplit(lineas[u], \";\");  //Volcamos el contenido de una línea dentro de Array
+    }
+
+    opcion_vaciado = rb_vaciado.number;  //Recuperamos cual será el origen de datos para crear los nuevos DP's
+
+    CSVcorrecto = comprobarCSV(contenido_fichero);  //Comprobamos si el fichero CSV cumple una serie de requisitos mínimos
+
+
+    if (CSVcorrecto)  //Si el fichero CSV es correcto
+    {
+      if (opcion_vaciado == 0)
+      {
+        crearDPSegunMDP(contenido_fichero);  //Creamos los DP's correspondientes cogiendo como base de su configuración el MDP
+      }
+      else if (opcion_vaciado == 1)
+      {
+        crearRemapearDPSegunMDP(contenido_fichero); //Creamos los DP's correspondientes cogiendo como base de su configuración el MDP
+      }
+      else
+      {
+        vaciarDPT(contenido_fichero); //Comprobamos si debemos realizar el vaciado completo de los DPT's del fichero CSV pero conservando el MDP
+      }
+
+      //crear_tabla_bd_mdp(contenido_fichero);  //Creamos la tabla en la BBDD SQL con la información de los DP's
+
+      txf_path_csv.text(\"\");  //Vaciamos el contenido con el path del fichero CSV
+      rb_vaciado.number(0);  //Reiniciamos la selección del RadioBox de vaciado de datos
+    }
+    else    //Si por el contrario el fichero CSV continie algún tipo de error
+    {
+      DebugN(\"------------------ EL CSV NO ES CORRECTO.---------------\");
+    }
+
+    ae_loading_ewo.stop();  //Detenemos la animación del loading
+    ae_loading_ewo.visible(FALSE);  //Ocultamos la animación del loading
+  }
+}
+" 0
+ E E E
+14 9
+"txf_path_csv"
+"MEDIANO_AZUL"
+1 241.8040431266846 663.765789400578 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "LIB_IRC_BLANCO" E E
+ E E
+4 0 0 0 0 0
+E E E
+1
+9
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+LANG:10000 0 
+LANG:10027 0 
+
+5
+"shadowOffset" "[5,5]"
+"shadowColor" "{63,63,63,70}"
+"shadowRadius" "18"
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+9
+LANG:10001 34 Tahoma,-1,13,5,50,0,0,0,0,0,Normal
+LANG:10010 34 Tahoma,-1,13,5,50,0,0,0,0,0,Normal
+LANG:10011 34 Tahoma,-1,13,5,50,0,0,0,0,0,Normal
+LANG:10009 34 Tahoma,-1,15,5,50,0,0,0,0,0,Normal
+LANG:10008 34 Tahoma,-1,13,5,50,0,0,0,0,0,Normal
+LANG:10018 34 Tahoma,-1,13,5,50,0,0,0,0,0,Normal
+LANG:10005 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+LANG:10000 30 Noto Sans,-1,13,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,13,5,50,0,0,0,0,0
+0  148.4714285714285 622 811.5285714285715 647
+2 "0s" 0 0 0 8 0 -1  "main(mapping event)
+{
+  string path_csv;
+
+  fileSelector(path_csv, PROJ_PATH + \"/config\", FALSE, \"*.csv\", TRUE, \"MyId\");
+
+  setValue(\"\", \"text\", path_csv);
+}" 0
+ E E
+13 21
+"PUSH_BUTTON2"
+"GRANDE_AZUL"
+1 445.131510972653 919.9854068446648 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "LIB_IRC_BLANCO" E E
+ E E
+16 0 0 0 0 0
+E E E
+1
+6
+LANG:10001 6 Accept
+LANG:10010 7 Aceptar
+LANG:10011 6 Accept
+LANG:10009 8 Accepter
+LANG:10008 6 Accept
+LANG:10018 6 Accept
+
+5
+"shadowOffset" "[5,5]"
+"shadowColor" "{63,63,63,70}"
+"shadowRadius" "18"
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  766.1327271640216 887.732777780835 858.93117994767 926.0578761417189
+
+P 
+4294967295
+"pictures/iconos/botoneras/flecha_der_off.svg"
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+"main(mapping event)
+{
+  RootPanelOnModule(\"vision/sinopticos/06_configuracion/configuracion/asistenteConfiguraciones/configuracion_ini.pnl\", \"ini\", \"modulo_config\", makeDynString());
+}
+" 0
+ E E E
+2 22
+"PRIMITIVE_TEXT9"
+""
+1 561.584759972651 58 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "_Window" E E
+ E E
+17 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+"transformable" "0"
+E E 0 1 3 2 1 E 1.007301911238731 0 1.172350135187827 -86.10367411616679 -8.064509463147878 0 E 415 58 709 82
+0 2 2 "0s" 0 0 0 193 0 0  561.584759972651 58 1
+6
+LANG:10001 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10010 35 Tahoma,-1,21,5,75,0,0,0,0,0,Negrita
+LANG:10011 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10009 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10008 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10018 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+0 6
+LANG:10001 46 Mapeo por completo un DP en función de su MDP
+LANG:10010 27 Mapeo en función de un CSV
+LANG:10011 46 Mapeo por completo un DP en función de su MDP
+LANG:10009 46 Mapeo por completo un DP en función de su MDP
+LANG:10008 46 Mapeo por completo un DP en función de su MDP
+LANG:10018 46 Mapeo por completo un DP en función de su MDP
+2 23
+"label_vaciar"
+"MEDIANO_AZUL"
+1 -2192.448697895544 -3180.997761046945 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "LIB_IRC_BLANCO" E E
+ E E
+18 0 0 0 0 0
+E E E
+0
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+5
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+"transformable" "0"
+E E 0 1 3 2 1 E 0.8035714285714286 0 0.09622476609823721 312.8571428571429 153.0907655157586 0 E 40 36 376 261
+0 2 2 "0s" 0 0 0 72 0 0  40 36 1
+7
+LANG:10001 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10010 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10011 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10009 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10008 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10018 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10005 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+0 7
+LANG:10001 8 Drivers:
+LANG:10010 32 ¿Que quieres borrar en el PARA?
+LANG:10011 11 Startkarte:
+LANG:10009 8 Drivers:
+LANG:10008 19 Biglietto d'inizio:
+LANG:10018 17 Comece o bilhete:
+LANG:10005 13 Start ticket:
+19 24
+"rb_vaciado"
+"MEDIANO_AZUL"
+1 226.3167595443001 -43 E E E 1 E 1 E N "LIB_IRC_AZUL_01" E N "_Transparent" E E
+ E E
+19 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+5
+"shadowOffset" "[5,5]"
+"shadowColor" "{63,63,63,80}"
+"shadowRadius" "18"
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  268.7500000000001 207.5613133292816 691.25 407.5790490475299
+3
+T 
+6
+LANG:10001 3 ???
+LANG:10010 4 Nada
+LANG:10011 3 ???
+LANG:10009 3 ???
+LANG:10008 3 ???
+LANG:10018 3 ???
+
+1 
+2
+LANG:10001 0 
+LANG:10010 0 
+E E
+0 0 0 0 0
+T 
+6
+LANG:10001 3 ???
+LANG:10010 38 Nada, remapeando los DPs ya existentes
+LANG:10011 3 ???
+LANG:10009 3 ???
+LANG:10008 3 ???
+LANG:10018 3 ???
+
+0 
+2
+LANG:10001 0 
+LANG:10010 0 
+E E
+0 0 0 0 0
+T 
+2
+LANG:10001 3 ???
+LANG:10010 44 Los DPs de los DPTYPE encontrados en el CSV.
+
+0 
+2
+LANG:10001 0 
+LANG:10010 0 
+E E
+0 0 0 0 0
+1
+"main()
+{
+
+  int opcionVaciado;
+  opcionVaciado = rb_vaciado.number; //Recuperamos el tipo de vaciado
+
+}
+" 0
+ "main(int button)
+{
+  int opcionVaciado;
+  opcionVaciado = rb_vaciado.number; //Recuperamos el tipo de vaciado
+
+  if (opcionVaciado == 0)
+  {
+    txf_rb_vaciado.text(\"No se borra nada\");
+  }
+  else if (opcionVaciado == 1)
+  {
+    txf_rb_vaciado.text(\"No se borra nada pero se remapean los DPs existentes\");
+  }
+  else if (opcionVaciado == 2)
+  {
+    txf_rb_vaciado.text(\"Se borraran todos los DataPoints, cuyos DataPointsType, estén el CSV.\\nNo se borran los MastersDatapoints.\");
+  }
+}
+" 0
+
+2 25
+"txf_rb_vaciado"
+""
+1 1.674242996896075 -1737.708793843198 E E E 1 E 1 E N "Yellow" E N "LIB_IRC_AZUL_01" E E
+ E E
+20 0 0 0 0 0
+E E E
+0
+7
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+LANG:10005 0 
+
+5
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+"transformable" "0"
+E E 0 1 3 2 1 E 2.202380952380952 0 0.3905227585200838 21.90476190476197 408.2305651597696 1 E 40 36 376 261
+0 2 2 "0s" 0 0 0 72 0 0  40 36 1
+7
+LANG:10001 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10010 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10011 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10009 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10008 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10018 35 Tahoma,-1,16,5,75,0,0,0,0,0,Negrita
+LANG:10005 35 Tahoma,-1,15,5,75,0,0,0,0,0,Negrita
+0 7
+LANG:10001 8 Drivers:
+LANG:10010 16 No se borra nada
+LANG:10011 11 Startkarte:
+LANG:10009 8 Drivers:
+LANG:10008 19 Biglietto d'inizio:
+LANG:10018 17 Comece o bilhete:
+LANG:10005 13 Start ticket:
+0
+LAYER, 1 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 2 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 3 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 4 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 5 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 6 
+2
+LANG:10001 0 
+LANG:10010 0 
+0
+LAYER, 7 
+2
+LANG:10001 0 
+LANG:10010 0 
+29 11
+"ae_loading_ewo"
+""
+1 55.90869905956134 -147.0406599497793 E E E 1 E 0 E N "_3DText" E N "_3DFace" E E
+ E E
+6 0 0 0 0 0
+E E E
+0
+6
+LANG:10001 0 
+LANG:10010 0 
+LANG:10011 0 
+LANG:10009 0 
+LANG:10008 0 
+LANG:10018 0 
+
+4
+"effectType" "enum 2"
+"color1" "color {1,72,152,225}"
+"layoutAlignment" "AlignNone"
+"showFocus" "0"
+6
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10010 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10011 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10009 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10008 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10018 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  -4.87500000000005 -256.7193433353592 964.6250000000001 676.2806566646408
+19 AttentionEffect.ewo
+0
+E0
+0
